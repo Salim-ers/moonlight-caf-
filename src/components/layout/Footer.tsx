@@ -1,12 +1,12 @@
-import Image from "next/image";
-import { TLink } from "@/components/motion/TransitionProvider";
+import { TLink } from "@/components/motion/PageTransition";
+import { Lines } from "@/components/motion/Reveal";
+import { Logo } from "@/components/ui/Logo";
+import { OpenStatus } from "@/components/ui/OpenStatus";
 import { href, type Locale, type NavKey } from "@/i18n/config";
 import { getDictionary } from "@/i18n";
 import { siteConfig, mapsLinks } from "@/data/site-config";
 import { groupedHours, formatTime } from "@/lib/hours";
-import { OpenStatus } from "@/components/ui/OpenStatus";
 import { LangSwitch } from "./LangSwitch";
-import { InkLogo } from "@/components/motion/InkLogo";
 import { BackToTop } from "./BackToTop";
 
 const EXPLORE: NavKey[] = ["menu", "favorites", "cafe", "story", "visit"];
@@ -18,20 +18,22 @@ function dayRange(days: number[], names: string[]) {
 
 export function Footer({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
-  const year = 2026;
   return (
-    <footer data-site-footer className="relative overflow-hidden bg-cream text-ink">
-      <div className="wrap grid gap-14 pb-10 pt-20 md:pt-28 lg:grid-cols-12 lg:gap-8">
-        <div className="lg:col-span-5">
-          <TLink href={href("home", locale)} aria-label={t.a11y.home} className="inline-block">
-            <InkLogo className="w-[min(78vw,340px)]" />
-          </TLink>
-          <p className="t-lede mt-6 max-w-sm text-ink-soft">{t.footer.tagline}</p>
+    <footer data-site-footer className="relative z-10 -mt-10 overflow-hidden rounded-t-[2.5rem] bg-ink text-ivory md:-mt-14 md:rounded-t-[3.5rem]">
+      <div className="wrap pb-8 pt-16 md:pt-24">
+        <div className="grid gap-12 lg:grid-cols-12 lg:items-end">
+          <Lines as="p" lines={t.footer.invite} accent={1} className="t-display lg:col-span-8 [&_em]:text-pink" />
+          <div className="lg:col-span-4 lg:justify-self-end">
+            <TLink href={href("home", locale)} aria-label={t.a11y.home} className="inline-block">
+              <Logo light alt="Moonlight café" className="h-auto w-[min(60vw,250px)]" />
+            </TLink>
+          </div>
         </div>
 
-        <div className="grid gap-10 sm:grid-cols-[1fr_0.8fr_1.35fr] lg:col-span-7">
-          <div>
-            <h2 className="t-label mb-4 font-[family-name:var(--font-sans)]">{t.footer.visit}</h2>
+        <div className="mt-16 grid gap-10 border-t border-ivory/15 pt-10 sm:grid-cols-2 lg:grid-cols-12">
+          <p className="max-w-xs text-ivory/75 lg:col-span-4">{t.footer.tagline}</p>
+          <div className="lg:col-span-3">
+            <h2 className="t-eyebrow mb-4 font-[family-name:var(--font-sans)] text-ivory/60">{t.footer.visit}</h2>
             <address className="not-italic">
               <a href={mapsLinks.place} target="_blank" rel="noopener noreferrer" className="link-draw">
                 {siteConfig.address.street}
@@ -40,22 +42,19 @@ export function Footer({ locale }: { locale: Locale }) {
                 <span className="sr-only"> {t.a11y.newTab}</span>
               </a>
             </address>
-            <OpenStatus locale={locale} className="t-small mt-3 text-ink-soft" />
-            <ul className="t-small mt-4 space-y-1 text-ink-soft">
+            <OpenStatus locale={locale} className="t-small mt-3 text-ivory/80" />
+            <ul className="t-small mt-4 space-y-1 text-ivory/70">
               {groupedHours().map((g) => (
                 <li key={g.days.join()}>
-                  {dayRange(g.days, t.days)}
-                  <br />
-                  <span className="tabular-nums text-ink">
-                    {g.closed ? "—" : `${formatTime(g.open!, locale)} – ${formatTime(g.close!, locale)}`}
-                  </span>
+                  {dayRange(g.days, t.days)} ·{" "}
+                  <span className="tabular-nums text-ivory">{g.closed ? "—" : `${formatTime(g.open!, locale)} – ${formatTime(g.close!, locale)}`}</span>
                 </li>
               ))}
             </ul>
           </div>
-          <nav aria-label={t.a11y.footerNav}>
-            <h2 className="t-label mb-4 font-[family-name:var(--font-sans)]">{t.footer.explore}</h2>
-            <ul className="space-y-2">
+          <nav aria-label={t.a11y.footerNav} className="lg:col-span-2">
+            <h2 className="t-eyebrow mb-4 font-[family-name:var(--font-sans)] text-ivory/60">{t.footer.explore}</h2>
+            <ul className="space-y-1.5">
               {EXPLORE.map((k) => (
                 <li key={k}>
                   <TLink href={href(k, locale)} className="link-draw">
@@ -65,31 +64,27 @@ export function Footer({ locale }: { locale: Locale }) {
               ))}
             </ul>
           </nav>
-          <div>
-            <h2 className="t-label mb-4 font-[family-name:var(--font-sans)]">{t.footer.follow}</h2>
-            <ul className="space-y-2">
+          <div className="lg:col-span-3">
+            <h2 className="t-eyebrow mb-4 font-[family-name:var(--font-sans)] text-ivory/60">{t.footer.follow}</h2>
+            <ul className="space-y-1.5">
               <li>
                 <a href={siteConfig.instagram.url} target="_blank" rel="noopener noreferrer" className="link-draw">
-                  Instagram<span className="sr-only"> {t.a11y.newTab}</span>
+                  Instagram {siteConfig.instagram.handle}
+                  <span className="sr-only"> {t.a11y.newTab}</span>
                 </a>
               </li>
               <li>
-                <a href={`mailto:${siteConfig.email}?subject=${encodeURIComponent(t.common.emailSubject)}`} className="link-draw">
+                <a href={`mailto:${siteConfig.email}?subject=${encodeURIComponent(t.common.emailSubject)}`} className="link-draw break-all">
                   {siteConfig.email}
                 </a>
               </li>
             </ul>
-            <div className="mt-8 hidden sm:block">
-              <Image src="/brand/logo-cup.png" alt="" width={135} height={237} className="h-14 w-auto opacity-80" />
-            </div>
           </div>
         </div>
-      </div>
 
-      <div className="wrap">
-        <div className="t-small flex flex-col gap-4 border-t border-ink/12 py-6 text-ink-soft md:flex-row md:items-center md:justify-between">
+        <div className="t-small mt-14 flex flex-col gap-4 border-t border-ivory/15 pt-6 text-ivory/65 md:flex-row md:items-center md:justify-between">
           <p>
-            © {year} {siteConfig.name}. {t.footer.rights}
+            © 2026 {siteConfig.name}. {t.footer.rights}
             {siteConfig.credit ? (
               <>
                 {" "}
@@ -120,7 +115,7 @@ export function Footer({ locale }: { locale: Locale }) {
               </TLink>
             </li>
             <li>
-              <LangSwitch locale={locale} long />
+              <LangSwitch locale={locale} long className="link-draw inline-flex min-h-11 items-center font-normal" />
             </li>
             <li>
               <BackToTop label={t.footer.backTop} />

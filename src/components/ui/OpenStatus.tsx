@@ -8,7 +8,7 @@ import type { Locale } from "@/i18n/config";
 /**
  * Statut « ouvert / fermé » calculé à l'heure de Paris (heure d'été comprise),
  * côté navigateur uniquement pour rester juste même sur une page mise en cache.
- * Les jours fériés ne sont pas devinés : voir `exceptions` dans data/opening-hours.ts.
+ * Il découle uniquement des horaires saisis dans data/opening-hours.ts (aucun statut inventé).
  */
 export function OpenStatus({ locale, className = "" }: { locale: Locale; className?: string }) {
   const t = getDictionary(locale);
@@ -37,9 +37,9 @@ export function OpenStatus({ locale, className = "" }: { locale: Locale; classNa
   const isOpen = state?.status === "open";
   return (
     <p className={`flex items-center gap-2.5 ${className}`} aria-live="polite">
-      <span aria-hidden="true" className="relative flex h-2 w-2">
-        {isOpen ? <span className="absolute inset-0 animate-ping rounded-full bg-matcha opacity-50 [animation-duration:2.4s]" /> : null}
-        <span className={`relative h-2 w-2 rounded-full ${isOpen ? "bg-matcha" : state ? "bg-wood" : "bg-stone-deep"}`} />
+      <span aria-hidden="true" className="relative flex h-2.5 w-2.5">
+        {isOpen ? <span className="absolute inset-0 animate-ping rounded-full bg-matcha opacity-60 [animation-duration:2.4s]" /> : null}
+        <span className={`relative h-2.5 w-2.5 rounded-full ${isOpen ? "bg-matcha" : state ? "bg-caramel" : "bg-ink/25"}`} />
       </span>
       <span>{text}</span>
     </p>

@@ -2,16 +2,7 @@ export const locales = ["fr", "en"] as const;
 export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "fr";
 
-export type RouteKey =
-  | "home"
-  | "menu"
-  | "favorites"
-  | "cafe"
-  | "story"
-  | "visit"
-  | "legal"
-  | "privacy"
-  | "cookies";
+export type RouteKey = "home" | "menu" | "favorites" | "cafe" | "story" | "visit" | "legal" | "privacy" | "cookies";
 
 /** URLs localisées. Le français est servi sans préfixe, l'anglais sous /en. */
 export const routes: Record<RouteKey, Record<Locale, string>> = {

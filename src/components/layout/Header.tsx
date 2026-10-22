@@ -1,18 +1,22 @@
 "use client";
 
-import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { TLink } from "@/components/motion/TransitionProvider";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { TLink } from "@/components/motion/PageTransition";
+import { Logo } from "@/components/ui/Logo";
 import { href, type Locale, type NavKey } from "@/i18n/config";
 import { getDictionary } from "@/i18n";
-import { MoonPhase } from "./MoonPhase";
+import { pageTone, tones } from "@/lib/tones";
 import { LangSwitch } from "./LangSwitch";
 import { MobileMenu } from "./MobileMenu";
-import { ButtonLink } from "@/components/ui/Button";
 
-export const NAV: NavKey[] = ["menu", "favorites", "cafe", "story"];
+const NAV: NavKey[] = ["menu", "favorites", "cafe", "story"];
 
+/**
+ * En-tête : logo officiel complet à gauche, navigation en capsule flottante (lisible sur toutes
+ * les couleurs de section), « Nous trouver » mis en avant. Il s'efface en descendant et revient
+ * dès que l'on remonte.
+ */
 export function Header({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
   const pathname = usePathname();
@@ -20,6 +24,7 @@ export function Header({ locale }: { locale: Locale }) {
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
   const last = useRef(0);
+  const toggle = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     let raf = 0;
@@ -30,7 +35,7 @@ export function Header({ locale }: { locale: Locale }) {
         const y = window.scrollY;
         setScrolled(y > 24);
         const delta = y - last.current;
-        if (Math.abs(delta) > 6) setHidden(delta > 0 && y > 320);
+        if (Math.abs(delta) > 6) setHidden(delta > 0 && y > 420);
         last.current = y;
       });
     };
@@ -42,7 +47,7 @@ export function Header({ locale }: { locale: Locale }) {
     };
   }, []);
 
-  // ferme le menu et réaffiche l'en-tête à chaque changement de page
+  // Changement de page : menu fermé, en-tête visible
   const [lastPath, setLastPath] = useState(pathname);
   if (lastPath !== pathname) {
     setLastPath(pathname);
@@ -51,73 +56,85 @@ export function Header({ locale }: { locale: Locale }) {
   }
 
   useEffect(() => {
-    document.documentElement.style.setProperty("--sticky-top", hidden ? "0px" : "var(--header-h)");
+    document.documentElement.style.setProperty("--sticky-top", hidden ? "0.75rem" : "var(--header-h)");
   }, [hidden]);
 
-  const isCurrent = (key: NavKey) => pathname === href(key, locale);
+  const close = useCallback(() => {
+    setOpen(false);
+    toggle.current?.focus();
+  }, []);
+
+  const isCurrent = (key: NavKey) => pathname.replace(/\/$/, "") === href(key, locale);
 
   return (
     <>
       <header
         data-site-header
-        className={`fixed inset-x-0 top-0 z-50 transition-[transform,background-color,box-shadow] duration-500 ease-[var(--ease-moon)] ${
-          hidden && !open ? "-translate-y-full" : "translate-y-0"
-        } ${scrolled && !open ? "bg-paper/85 shadow-[0_1px_0_rgba(35,35,31,0.08)] backdrop-blur-md" : "bg-transparent"}`}
+        className={`fixed inset-x-0 top-0 z-50 transition-transform duration-500 ease-[var(--ease-out)] ${
+          hidden && !open ? "-translate-y-[120%]" : "translate-y-0"
+        }`}
       >
-        <div className="wrap flex h-[var(--header-h)] items-center justify-between gap-6">
-          <TLink href={href("home", locale)} aria-label={t.a11y.home} className="relative z-[61] -ml-1 block p-1">
-            <Image
-              src={open ? "/brand/logo-wordmark-light.png" : "/brand/logo-wordmark.png"}
-              alt="Moonlight café"
-              width={1339}
-              height={295}
-              preload
-              className="h-[22px] w-auto sm:h-[26px]"
-            />
+        <div className="wrap flex h-[var(--header-h)] items-center justify-between gap-4">
+          <TLink
+            href={href("home", locale)}
+            aria-label={t.a11y.home}
+            className={`relative z-[61] -ml-2 block rounded-[1.1rem] px-2 py-1 transition-[background-color,box-shadow] duration-500 ${
+              scrolled && !open ? "bg-ivory/90 shadow-[0_6px_24px_-12px_rgb(39_36_32/0.35)] backdrop-blur-md" : ""
+            }`}
+          >
+            <Logo preload alt="Moonlight café" className="h-[56px] w-auto lg:h-[72px]" />
           </TLink>
 
           <nav aria-label={t.a11y.mainNav} className="hidden lg:block">
-            <ul className="flex items-center gap-9 text-[0.9375rem]">
-              {NAV.map((key) => (
-                <li key={key}>
-                  <TLink
-                    href={href(key, locale)}
-                    aria-current={isCurrent(key) ? "page" : undefined}
-                    className="link-draw py-2"
-                  >
-                    {t.nav[key]}
-                  </TLink>
-                </li>
-              ))}
+            <ul className="flex items-center gap-1 rounded-full bg-ivory/85 p-1.5 shadow-[0_6px_28px_-14px_rgb(39_36_32/0.4)] backdrop-blur-md">
+              {NAV.map((key) => {
+                const active = isCurrent(key);
+                return (
+                  <li key={key}>
+                    <TLink
+                      href={href(key, locale)}
+                      aria-current={active ? "page" : undefined}
+                      className="relative flex min-h-11 items-center gap-2 rounded-full px-4 text-[0.95rem] font-medium transition-colors duration-300 hover:bg-[var(--nav-tone)]"
+                      style={{ "--nav-tone": tones[pageTone[key]].soft, ...(active ? { background: "var(--nav-tone)" } : {}) } as CSSProperties}
+                    >
+                      {active ? <span aria-hidden="true" className="dot" style={{ "--dot": tones[pageTone[key]].deep } as CSSProperties} /> : null}
+                      <span className="roll">
+                        <span>{t.nav[key]}</span>
+                        <span aria-hidden="true">{t.nav[key]}</span>
+                      </span>
+                    </TLink>
+                  </li>
+                );
+              })}
             </ul>
           </nav>
 
-          <div className="flex items-center gap-4 sm:gap-5">
-            <MoonPhase label={t.a11y.scrollProgress} className="hidden text-ink sm:block" />
-            <div className="hidden items-center gap-5 lg:flex">
-              <LangSwitch locale={locale} />
-              <ButtonLink href={href("visit", locale)} size="sm" variant="ink">
+          <div className="flex items-center gap-2">
+            <div className="hidden items-center gap-2 lg:flex">
+              <LangSwitch locale={locale} className="chip min-h-11 bg-ivory/85 backdrop-blur-md" />
+              <TLink href={href("visit", locale)} data-magnetic="6" aria-current={isCurrent("visit") ? "page" : undefined} className="btn btn-sm">
                 {t.nav.visit}
-              </ButtonLink>
+              </TLink>
             </div>
             <button
+              ref={toggle}
               type="button"
               onClick={() => setOpen((o) => !o)}
               aria-expanded={open}
               aria-controls="mobile-menu"
               aria-label={open ? t.a11y.closeMenu : t.a11y.openMenu}
-              className={`relative z-[61] -mr-2 flex min-h-11 items-center gap-3 px-2 lg:hidden ${open ? "text-paper" : "text-ink"}`}
+              className="chip relative z-[61] min-h-11 gap-3 bg-ivory/90 pl-4 pr-3.5 font-semibold backdrop-blur-md lg:hidden"
             >
-              <span className="t-small font-medium">{open ? t.a11y.closeMenu.split(" ")[0] : "Menu"}</span>
-              <span aria-hidden="true" className="relative block h-3 w-6">
+              <span>{open ? t.common.close : t.common.menuLabel}</span>
+              <span aria-hidden="true" className="relative block h-3 w-5">
                 <span
-                  className={`absolute left-0 top-0 h-px w-6 bg-current transition-transform duration-500 ease-[var(--ease-moon)] ${
-                    open ? "translate-y-[5.5px] rotate-45" : ""
+                  className={`absolute left-0 top-0 h-[1.5px] w-5 bg-current transition-transform duration-500 ease-[var(--ease-out)] ${
+                    open ? "translate-y-[5.25px] rotate-45" : ""
                   }`}
                 />
                 <span
-                  className={`absolute bottom-0 left-0 h-px bg-current transition-all duration-500 ease-[var(--ease-moon)] ${
-                    open ? "w-6 -translate-y-[5.5px] -rotate-45" : "w-4"
+                  className={`absolute bottom-0 left-0 h-[1.5px] bg-current transition-all duration-500 ease-[var(--ease-out)] ${
+                    open ? "w-5 -translate-y-[5.25px] -rotate-45" : "w-3.5"
                   }`}
                 />
               </span>
@@ -125,7 +142,7 @@ export function Header({ locale }: { locale: Locale }) {
           </div>
         </div>
       </header>
-      <MobileMenu open={open} onClose={() => setOpen(false)} locale={locale} />
+      <MobileMenu open={open} onClose={close} locale={locale} />
     </>
   );
 }

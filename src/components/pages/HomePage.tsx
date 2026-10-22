@@ -1,30 +1,30 @@
 import type { Locale } from "@/i18n/config";
-import { getDictionary } from "@/i18n";
-import { Intro } from "@/components/home/Intro";
 import { Hero } from "@/components/home/Hero";
-import { IntroSection } from "@/components/home/IntroSection";
-import { FavoritesSection } from "@/components/home/FavoritesSection";
-import { MatchaSection } from "@/components/home/MatchaSection";
-import { PastrySection } from "@/components/home/PastrySection";
-import { PlaceSection } from "@/components/home/PlaceSection";
-import { StoryTeaser } from "@/components/home/StoryTeaser";
-import { SocialSection } from "@/components/home/SocialSection";
-import { VisitSection } from "@/components/home/VisitSection";
+import { Universe } from "@/components/home/Universe";
+import { Signatures } from "@/components/home/Signatures";
+import { MatchaMoment } from "@/components/home/MatchaMoment";
+import { CoffeeColors } from "@/components/home/CoffeeColors";
+import { SweetSide } from "@/components/home/SweetSide";
+import { Feeling } from "@/components/home/Feeling";
+import { Social } from "@/components/home/Social";
+import { Hello } from "@/components/home/Hello";
 
+/**
+ * L'accueil, en neuf scènes : chaque section a son intention, sa couleur et son mouvement.
+ * Rose (hero) → ivoire → lavande → matcha → couleur choisie → caramel → ivoire → bleu → crème.
+ */
 export function HomePage({ locale }: { locale: Locale }) {
-  const t = getDictionary(locale);
   return (
     <>
-      <Intro skipLabel={t.common.skipIntro} />
       <Hero locale={locale} />
-      <IntroSection locale={locale} />
-      <FavoritesSection locale={locale} />
-      <MatchaSection locale={locale} />
-      <PastrySection locale={locale} />
-      <PlaceSection locale={locale} />
-      <StoryTeaser locale={locale} />
-      <SocialSection locale={locale} />
-      <VisitSection locale={locale} />
+      <Universe locale={locale} />
+      <Signatures locale={locale} />
+      <MatchaMoment locale={locale} />
+      <CoffeeColors locale={locale} />
+      <SweetSide locale={locale} />
+      <Feeling locale={locale} />
+      <Social locale={locale} />
+      <Hello locale={locale} />
     </>
   );
 }

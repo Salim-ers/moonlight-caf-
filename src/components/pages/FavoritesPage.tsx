@@ -1,106 +1,156 @@
-import { Lines, Fade, ClipReveal } from "@/components/motion/Reveal";
+import type { CSSProperties } from "react";
+import { TLink } from "@/components/motion/PageTransition";
+import { Lines, Reveal, type RevealVariant } from "@/components/motion/Reveal";
+import { PageHead } from "@/components/ui/PageHead";
 import { Photo } from "@/components/ui/Photo";
-import { Kanji } from "@/components/motion/Kanji";
-import { ButtonLink } from "@/components/ui/Button";
+import { ButtonLink } from "@/components/ui/ButtonLink";
+import { DrinkArt } from "@/components/ui/DrinkArt";
 import { favorites } from "@/data/favorites";
 import { findItem, formatPrice } from "@/data/menu-data";
+import { toneVars } from "@/lib/tones";
 import { getDictionary, fill } from "@/i18n";
 import { href, type Locale } from "@/i18n/config";
 
 /**
- * Lookbook « Nos favoris » : chaque création a sa propre composition
- * (pleine largeur, diptyque, colonne décalée…), numérotée comme les pages d'un carnet.
+ * Lookbook « Nos favoris » : chaque création a sa propre mise en scène et sa couleur.
+ * La numérotation (« 01 / 06 ») et le compteur sont calculés depuis `favorites.ts`.
+ * Sans photo fiable, la création est présentée par une composition typographique.
  */
-const LAYOUTS = ["right", "left", "full", "right", "left", "type"] as const;
+const LAYOUTS = ["arch", "wide", "full", "circle", "arch-left"] as const;
+const SIZES = {
+  arch: "(min-width: 1024px) 84vw, 204vw",
+  "arch-left": "(min-width: 1024px) 84vw, 204vw",
+  wide: "(min-width: 1024px) 78vw, 124vw",
+  full: "(min-width: 640px) 100vw, 204vw",
+  circle: "(min-width: 1024px) 70vw, 164vw",
+};
+const REVEALS: Record<(typeof LAYOUTS)[number], RevealVariant> = {
+  arch: "clip-up",
+  wide: "clip-left",
+  full: "window",
+  circle: "circle",
+  "arch-left": "clip-right",
+};
 
 export function FavoritesPage({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
+  const f = t.favoritesPage;
   const total = String(favorites.length).padStart(2, "0");
 
   return (
     <>
-      <header className="bg-paper pb-10 pt-36 md:pb-16 md:pt-44">
-        <div className="wrap grid gap-8 md:grid-cols-12 md:items-end">
-          <Lines as="h1" lines={[t.favoritesPage.title]} trigger="load" className="t-display md:col-span-8" />
-          <Fade trigger="load" delay={0.35} className="md:col-span-4">
-            <p className="t-lede text-ink-soft">{t.favoritesPage.lede}</p>
-            <p className="t-label mt-4">{fill(t.favoritesPage.count, { n: favorites.length })}</p>
-          </Fade>
-        </div>
-      </header>
+      <PageHead
+        tone="pink"
+        title={f.title}
+        lede={f.lede}
+        aside={<p className="t-eyebrow text-pink-deep">{fill(f.count, { n: favorites.length })}</p>}
+        visual={
+          <div
+            className="enter-rise relative aspect-[5/4] overflow-hidden rounded-[999px_999px_1.75rem_1.75rem] bg-pink"
+            style={{ "--d": "0.08s" } as CSSProperties}
+          >
+            <div className="zoom absolute inset-0">
+              <Photo id="p15" locale={locale} preload quality={72} sizes="(min-width: 1024px) 56vw, 132vw" />
+            </div>
+          </div>
+        }
+      />
 
-      <ol className="bg-paper">
+      <nav aria-label={f.index} className="bg-ivory">
+        <ol className="wrap flex flex-wrap gap-2 py-8">
+          {favorites.map((fav, i) => {
+            const item = findItem(fav.itemId);
+            return (
+              <li key={fav.itemId}>
+                <TLink
+                  href={`#${item.id}`}
+                  className="chip min-h-11 gap-2 border border-ink/10 font-semibold transition-colors hover:bg-[var(--tone-soft)]"
+                  style={toneVars(fav.tone)}
+                >
+                  <span className="tabular-nums text-ink-soft">{String(i + 1).padStart(2, "0")}</span>
+                  {item.name[locale]}
+                </TLink>
+              </li>
+            );
+          })}
+        </ol>
+      </nav>
+
+      <ol>
         {favorites.map((fav, i) => {
           const item = findItem(fav.itemId);
           const n = String(i + 1).padStart(2, "0");
-          const layout = item.photo ? LAYOUTS[i % LAYOUTS.length] === "type" ? "right" : LAYOUTS[i % LAYOUTS.length] : "type";
+          const layout = fav.photo ? LAYOUTS[i % LAYOUTS.length] : "type";
           const text = (
-            <div className="max-w-md">
-              <p className="t-label tabular-nums">
+            <div className="fav-text">
+              <p className="t-eyebrow tabular-nums text-[var(--tone-deep)]">
                 {n} / {total}
               </p>
-              <Lines as="h2" lines={[item.name[locale]]} className="t-h2 mt-4" />
-              <Fade className="mt-6">
-                <p className="t-lede text-ink-soft">{fav.story[locale]}</p>
-                <p className="mt-6 font-[family-name:var(--font-display)] text-[1.6rem] tabular-nums">{formatPrice(item.price, locale)}</p>
-              </Fade>
+              <Lines as="h2" lines={[item.name[locale]]} className="t-h1 mt-4" />
+              <Reveal className="mt-6">
+                <p className="font-[family-name:var(--font-serif)] text-[2.4rem] italic leading-none tabular-nums">{formatPrice(item.price, locale)}</p>
+                <p className="t-lede mt-6 max-w-[30rem] text-ink/80">{fav.story[locale]}</p>
+                <ul className="mt-6 flex flex-wrap gap-2">
+                  {fav.notes[locale].map((note) => (
+                    <li key={note} className="chip">
+                      <span className="dot" style={{ "--dot": "var(--tone)" } as CSSProperties} aria-hidden="true" />
+                      {note}
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
             </div>
           );
 
-          if (layout === "type") {
-            return (
-              <li key={fav.itemId} id={item.id} className="scroll-mt-24 py-20 md:py-28">
-                <div className="wrap grid items-center gap-10 md:grid-cols-12">
-                  <div className="flex aspect-[4/3] items-center justify-center gap-4 bg-matcha-mist text-matcha md:col-span-6">
-                    <Kanji char="抹" className="h-[18vw] max-h-48 w-[18vw] max-w-48" />
-                    <Kanji char="茶" className="h-[18vw] max-h-48 w-[18vw] max-w-48" />
-                  </div>
-                  <div className="md:col-span-5 md:col-start-8">
-                    {text}
-                    <p className="t-small mt-4 text-ink-soft">{t.home.favorites.noPhoto}</p>
-                  </div>
-                </div>
-              </li>
-            );
-          }
-
-          if (layout === "full") {
-            return (
-              <li key={fav.itemId} id={item.id} className="scroll-mt-24 py-20 md:py-28">
-                <ClipReveal className="aspect-[4/3] w-full md:aspect-[21/9]" parallax={12}>
-                  <Photo id={item.photo!} locale={locale} sizes="100vw" />
-                </ClipReveal>
-                <div className="wrap mt-10 md:-mt-28 md:flex md:justify-end">
-                  <div className="relative bg-paper md:w-[44%] md:p-12">{text}</div>
-                </div>
-              </li>
-            );
-          }
-
-          const photoLeft = layout === "left";
           return (
-            <li key={fav.itemId} id={item.id} className="scroll-mt-24 py-20 md:py-28">
-              <div className="wrap grid items-center gap-10 md:grid-cols-12 md:gap-8">
-                <ClipReveal
-                  from={photoLeft ? "left" : "right"}
-                  className={`aspect-[4/5] md:col-span-6 ${photoLeft ? "" : "md:order-2 md:col-start-7"}`}
-                  parallax={10}
-                >
-                  <Photo id={item.photo!} locale={locale} sizes="(min-width: 768px) 50vw, 92vw" />
-                </ClipReveal>
-                <div className={`md:col-span-5 ${photoLeft ? "md:col-start-8" : "md:order-1 md:col-start-1"}`}>{text}</div>
+            <li key={fav.itemId} id={item.id} className={`fav fav--${layout}`} style={toneVars(fav.tone)}>
+              <span aria-hidden="true" className="fav-num">
+                {n}
+              </span>
+              <div className="wrap fav-grid">
+                {layout === "type" ? (
+                  <div className="fav-type" aria-hidden="true">
+                    <DrinkArt uid={`fav-${fav.itemId}`} kind={fav.art.kind} colors={fav.art.colors} className="fav-type-art float" />
+                    <p className="fav-type-words">
+                      {fav.notes[locale].map((w, k) => (
+                        <span key={w} style={{ "--k": k } as CSSProperties}>
+                          {w}
+                        </span>
+                      ))}
+                    </p>
+                  </div>
+                ) : (
+                  <figure className="fav-photo">
+                    <Reveal
+                      variant={REVEALS[layout as keyof typeof REVEALS]}
+                      className="fav-frame"
+                      style={{ "--clip-r": layout === "circle" ? "50%" : "1.75rem" } as CSSProperties}
+                    >
+                      <div className="zoom absolute inset-0">
+                        <Photo id={fav.photo!} locale={locale} focus={fav.focus} sizes={SIZES[layout as keyof typeof SIZES]} />
+                      </div>
+                    </Reveal>
+                  </figure>
+                )}
+                {text}
+                {layout === "type" ? <p className="t-small fav-nophoto font-semibold text-[var(--tone-deep)]">{f.noPhoto}</p> : null}
               </div>
             </li>
           );
         })}
       </ol>
 
-      <section className="bg-cream py-24 text-center md:py-32">
-        <div className="wrap">
-          <Lines lines={[t.menuPage.title]} className="t-h2" />
-          <Fade className="mt-8">
-            <ButtonLink href={href("menu", locale)}>{t.favoritesPage.seeMenu}</ButtonLink>
-          </Fade>
+      <section className="bg-butter pb-32 pt-24 text-center md:pb-44 md:pt-32">
+        <div className="wrap flex flex-col items-center">
+          <Lines lines={f.closing} accent={1} className="t-display max-w-4xl [&_em]:text-caramel-deep" />
+          <Reveal className="mt-10 flex flex-wrap justify-center gap-3">
+            <ButtonLink href={href("menu", locale)} magnetic fill="var(--color-caramel)">
+              {f.seeMenu}
+            </ButtonLink>
+            <ButtonLink href={href("visit", locale)} variant="outline">
+              {t.common.findUs}
+            </ButtonLink>
+          </Reveal>
         </div>
       </section>
     </>

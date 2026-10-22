@@ -1,79 +1,76 @@
-# Moonlight Café — site web
+# Moonlight Café — site web (V2)
 
-Site vitrine bilingue (FR / EN) du Moonlight Café, coffee shop de spécialité au 27 rue des Gravilliers, Paris 3e.
+Site vitrine bilingue (FR / EN) du Moonlight Café, coffee shop créatif au 27 rue des Gravilliers, Paris 3e.
 
-- **Stack** : Next.js 16 (App Router, Turbopack) · React 19 · TypeScript strict · Tailwind CSS 4 · GSAP 3 (ScrollTrigger) · Lenis · Lucide
-- **Rendu** : toutes les pages sont générées statiquement (SSG) ; seul le 404 est rendu à la demande.
+- **Stack** : Next.js 16 (App Router, Turbopack) · React 19 · TypeScript strict · Tailwind CSS 4 · Lucide
+- **Animations** : un moteur maison de ≈ 3 Ko (IntersectionObserver + variables CSS) — plus de GSAP ni de Lenis.
+- **Rendu** : toutes les pages sont générées statiquement (SSG) ; seul le 404 est rendu à la demande. CSS inliné dans le `<head>`.
 - **Aucune base de données, aucun CMS** : tout le contenu se modifie dans `src/data/` et `src/i18n/`.
 
 ---
 
 ## 1. Installation et lancement
 
-Prérequis : Node.js 20.9 ou plus récent (testé avec Node 22), npm 10.
+Prérequis : Node.js 20.9 ou plus récent (testé avec Node 24), npm 10.
 
 ```bash
 npm install          # installe les dépendances
 npm run dev          # serveur de développement → http://localhost:3000
-```
-
-Production en local :
-
-```bash
-npm run build        # build optimisé
+npm run build        # build optimisé (lance d'abord l'audit des photos)
 npm run start        # sert le build → http://localhost:3000
 ```
 
 Contrôles qualité :
 
 ```bash
-npm run typecheck    # TypeScript strict
-npm run lint         # ESLint (règles Next.js + React Hooks)
-npm run check        # les deux + build
+npm run typecheck     # TypeScript strict
+npm run lint          # ESLint (règles Next.js + React Hooks)
+npm run check:photos  # audit anti-doublon des 26 photographies
+npm run check         # typecheck + lint + build
+npm run qa            # recette fonctionnelle (serveur lancé, voir docs/VERIFICATION.md)
 ```
-
-> Astuce : si une modification CSS ne s'affiche pas en développement, arrêtez le serveur, supprimez le dossier `.next` et relancez `npm run dev` (cache Turbopack).
 
 ## 2. Déploiement sur Vercel
 
-1. Poussez le dossier sur un dépôt GitHub / GitLab / Bitbucket.
-2. Sur vercel.com : **Add New → Project**, importez le dépôt. Vercel détecte Next.js, aucun réglage de build n'est nécessaire.
-3. Dans **Settings → Environment Variables**, ajoutez :
-   - `NEXT_PUBLIC_SITE_URL` = l'URL finale, par exemple `https://www.moonlightcafe.fr` (sans `/` final).
-4. Déployez. Puis **Settings → Domains** pour brancher le nom de domaine.
+1. Poussez la branche sur le dépôt GitHub relié au projet Vercel.
+2. Vercel détecte Next.js, aucun réglage de build n'est nécessaire (`npm run build` exécute aussi l'audit des photos : un doublon fait échouer le déploiement).
+3. **Settings → Environment Variables** : `NEXT_PUBLIC_SITE_URL` = l'URL finale (ex. `https://www.moonlightcafe.fr`, sans `/` final).
+4. **Settings → Domains** pour brancher le nom de domaine.
 
-`NEXT_PUBLIC_SITE_URL` sert aux URL canoniques, au sitemap, aux balises hreflang, à Open Graph et aux données structurées. Sur les déploiements de prévisualisation Vercel, `robots.txt` interdit automatiquement l'indexation.
+En ligne de commande : `npx vercel` (prévisualisation) puis `npx vercel --prod`.
+Sur les déploiements de prévisualisation, `robots.txt` interdit automatiquement l'indexation.
 
 ## 3. Structure du projet
 
 ```
 assets/originals/        Photos et logo d'origine, non retouchés (non servis par le site)
-public/brand/            Déclinaisons du logo (complet, illustration, signature, tasse, versions claires), icônes
-public/og/               Image de partage Open Graph (1200 × 630)
-public/textures/         Grain papier
+public/brand/            Logo complet optimisé (moonlight-logo.webp), logo-full.png (SEO), icônes
+public/og/               Image de partage Open Graph (logo complet, sans photo)
+scripts/
+  check-photos.mjs       Audit des photos (doublons d'usage, empreintes MD5, hachage perceptuel)
+  generate-brand-assets.mjs  Régénère logo web, icônes, favicon et image OG depuis le logo original
+  qa.mjs                 Recette fonctionnelle Playwright (38 contrôles)
 src/
-  app/
-    (fr)/                Routes françaises (langue principale, sans préfixe) + layout racine FR
-    (en)/en/             Routes anglaises sous /en + layout racine EN
-    sitemap.ts robots.ts manifest.ts icon.png apple-icon.png favicon.ico
-  assets/photos/         Photos utilisées par le site (Next.js génère AVIF/WebP et tailles responsive)
+  app/                   Routes (fr) sans préfixe, (en) sous /en, sitemap, robots, manifest, icônes
+  assets/photos/         Les 26 photos (Next.js génère AVIF/WebP et tailles responsive)
   components/
-    layout/              En-tête, menu mobile, pied de page, sélecteur de langue, indicateur « phase de lune »
-    home/                Sections de l'accueil (intro, hero, favoris, matcha, pâtisseries, lieu…)
-    menu/                Carte interactive, cartes produits
-    gallery/             Galerie masonry, visionneuse, galerie horizontale
-    motion/              Animations partagées (révélations, transitions de pages, défilement doux, kanji SVG)
+    layout/              En-tête, menu mobile, pied de page, sélecteur de langue
+    motion/              MotionRuntime (moteur d'animation), PageTransition (logo complet), Reveal
+    home/                Les 9 scènes de l'accueil
+    menu/                Navigation collante de la carte
+    gallery/             Visionneuse
     pages/               Contenu de chaque page (partagé FR/EN)
-    ui/                  Boutons, photo, horaires, statut d'ouverture, plan avec consentement…
+    ui/                  Photo, Logo, boutons, horaires, statut d'ouverture, plan avec consentement…
   data/
+    photo-manifest.ts    Registre central des 26 photos : un seul emplacement par photo
+    menu-data.ts         La carte : produits, prix, suppléments, couleur de chaque catégorie
+    favorites.ts         « Nos favoris » : ordre, textes, photo (si fiable), couleur
     site-config.ts       Coordonnées, réseaux, faits vérifiés, données juridiques à valider
-    menu-data.ts         La carte : produits, prix, suppléments
-    favorites.ts         Sélection « Nos favoris » et textes associés
-    gallery-data.ts      Photos, textes alternatifs FR/EN, points focaux, ordre de la galerie
     opening-hours.ts     Horaires et fermetures exceptionnelles
+  fonts/                 Polices auto-hébergées, sous-ensemblées (82 Ko au total)
   i18n/                  Textes FR (fr.ts) et EN (en.ts), routes localisées (config.ts)
-  lib/                   SEO, horaires (fuseau Europe/Paris), consentement, GSAP, polices
-  styles/globals.css     Tokens de couleurs et typographie, animations CSS
+  lib/                   SEO, horaires (fuseau Europe/Paris), consentement, polices, couleurs (tones.ts)
+  styles/globals.css     Tokens, typographie fluide, système d'animation CSS, compositions
 ```
 
 ## 4. Modifier le contenu
@@ -86,69 +83,45 @@ src/
 { id: "chocolat-chaud", name: { fr: "Chocolat chaud", en: "Hot chocolate" }, price: 5 },
 ```
 
-- Changer un prix : modifiez `price` (nombre décimal, `5.5` = 5,50 €). Il est mis à jour partout (carte, favoris, accueil).
-- Ajouter une boisson : copiez une ligne dans la bonne catégorie, avec un `id` unique.
-- Associer une photo : `photo: "strawberry"` (clé de `gallery-data.ts`), uniquement si la photo montre réellement ce produit.
-- Suppléments : tableau `extras` en bas du fichier.
+Changer un prix met à jour toutes les pages (carte, favoris, accueil). `tone` règle la couleur de la catégorie.
 
 ### Les favoris
-`src/data/favorites.ts` : l'ordre du tableau = l'ordre d'affichage. `itemId` renvoie à un produit de la carte (le prix est repris automatiquement).
+`src/data/favorites.ts` : l'ordre du tableau = l'ordre d'affichage ; la numérotation « 01 / 06 » et le compteur sont calculés. `photo` n'est renseigné que si la photo montre réellement le produit ; sans photo, la page affiche une composition typographique.
 
 ### Les horaires
-`src/data/opening-hours.ts`. Jours : 0 = dimanche … 6 = samedi.
-
-Fermeture exceptionnelle (jour férié, congés) :
-
-```ts
-export const exceptions = [
-  { date: "2026-12-25", closed: true },
-  { date: "2026-12-31", open: "09:30", close: "15:00" },
-];
-```
-
-Le statut « Ouvert jusqu'à… » est calculé dans le navigateur à l'heure de Paris (changement d'heure compris). Aucun jour férié n'est deviné : seules les exceptions saisies sont prises en compte.
-
-### E-mail, Instagram, adresse
-`src/data/site-config.ts` → `siteConfig`.
+`src/data/opening-hours.ts`. Jours : 0 = dimanche … 6 = samedi. Fermetures exceptionnelles dans `exceptions`.
+Le statut « Ouvert jusqu'à… » est calculé dans le navigateur à l'heure de Paris, uniquement à partir de ces données.
 
 ### Les textes
-`src/i18n/fr.ts` (français) et `src/i18n/en.ts` (anglais). TypeScript signale toute clé manquante dans l'une des deux langues.
+`src/i18n/fr.ts` et `src/i18n/en.ts`. TypeScript signale toute clé manquante dans l'une des deux langues.
 
-### SEO
-Titres et descriptions de chaque page : `meta.pages` dans `fr.ts` / `en.ts`. Les données structurées (`CafeOrCoffeeShop`) sont générées depuis `site-config.ts` et `opening-hours.ts` dans `src/lib/seo.ts`.
+## 5. Photographies — règle « une photo = un emplacement »
 
-## 5. Remplacer ou ajouter une photo
+Les 26 photos sont déclarées dans `src/data/photo-manifest.ts` (identifiant `p01`…`p26`, fichier source du ZIP, page et section propriétaires, fichier autorisé à l'utiliser, textes alternatifs FR/EN, point focal).
+La numérotation suit l'ordre du ZIP original `Moonlight  café.zip` (vérifié par empreinte MD5).
 
-1. Déposez le fichier dans `src/assets/photos/` (JPG, PNG ou WebP, idéalement 1600 px de large ou plus). Gardez l'original dans `assets/originals/`.
-2. Dans `src/data/gallery-data.ts`, importez-le et ajoutez une entrée :
-   ```ts
-   import p27 from "@/assets/photos/27-nouvelle-photo.jpg";
-   nouvelle: photo("27", p27, "table", "50% 50%", "Texte alternatif FR", "English alt text"),
-   ```
-   - la catégorie (`lieu`, `gestes`, `table`, `patisserie`) sert aux filtres de la galerie ;
-   - le 4e paramètre est le point focal utilisé pour les recadrages (`"40% 60%"` = un peu à gauche, un peu bas).
-3. Ajoutez la clé dans `galleryOrder` pour l'afficher dans la galerie de la page « Le café ».
+`npm run check:photos` (lancé automatiquement avant chaque build) échoue si :
+- un identifiant est utilisé plus d'une fois, ou ailleurs que dans le fichier déclaré ;
+- un fichier est identique à un autre (MD5) ou quasi identique (hachage perceptuel dHash) ;
+- une photo est importée directement sans passer par le registre.
 
-Next.js produit automatiquement les versions AVIF/WebP, les tailles adaptées à chaque écran et le flou de chargement. Les photos fournies mesurent 1672 × 941 px : elles sont servies au maximum à cette définition (pas d'agrandissement artificiel).
+Remplacer une photo : déposez le fichier dans `src/assets/photos/`, mettez à jour l'import et l'entrée du registre.
 
 ## 6. Logo
 
-Le fichier original (`assets/originals/logo-moonlight-cafe-original.png`) n'est jamais redessiné. Les déclinaisons de `public/brand/` sont des **découpes** du même fichier, sans déformation :
-
-| Fichier | Usage |
-|---|---|
-| `logo-full.png` / `-light.png` | Logo complet (pied de page, intro) |
-| `logo-wordmark.png` / `-light.png` | Signature manuscrite seule (en-tête) |
-| `logo-illustration.png` | La jeune femme seule |
-| `logo-cup.png` / `-light.png` | La tasse fumante (favicon, transitions) |
+Le fichier original (`assets/originals/logo-moonlight-cafe-original.png`, identique pixel à pixel à « Jeune fille au café Moonlight.png ») n'est jamais redessiné ni recadré. `npm run brand-assets` en dérive :
+- `public/brand/moonlight-logo.webp` — logo **complet** détouré (33 Ko), utilisé par l'en-tête, la transition de page et le pied de page (un seul téléchargement) ; sur fond sombre il est inversé en CSS ;
+- les icônes (logo complet sur fond crème), le favicon (illustration entière à 16–48 px) et l'image Open Graph.
 
 ## 7. Animations
 
-- Les entrées au chargement (intro, lever de lune du hero, titres) sont en **CSS pur** : elles démarrent au premier affichage, sans attendre JavaScript.
-- Les effets liés au défilement utilisent GSAP ScrollTrigger (pins, parallaxe, expansions) ; les révélations ponctuelles utilisent IntersectionObserver.
-- `prefers-reduced-motion` : aucune animation, aucun défilement doux, pas d'intro, pas de section épinglée.
-- L'intro ne joue qu'une fois par session et peut être passée (clic, toucher, clavier).
-- Parallaxe désactivée sous 768 px (économie de batterie et de calcul sur mobile).
+- **Entrées au chargement** (hero, en-têtes) : CSS pur, visibles dès le premier affichage, ≤ 0,9 s. Aucune introduction bloquante.
+- **Révélations au défilement** : attribut `data-reveal` (rideaux, cercle, fenêtre, lignes de titre…), déclenchées par IntersectionObserver.
+- **Séquences liées au défilement** : attribut `data-progress` → variable CSS `--p` (scène matcha épinglée, fenêtre sur la salle, mots révélés, table qui tourne…). Un seul écouteur de défilement passif.
+- **Souris** (ordinateur uniquement) : parallaxe du hero (`data-pointer`), boutons magnétiques (`data-magnetic`), curseur « Glisser » sur le rail des signatures.
+- **Transition de page** : couleur de la page d'arrivée + logo complet centré, ≈ 0,5 s ; aucune attente artificielle.
+- `prefers-reduced-motion` : aucune animation, aucun contenu masqué, navigation instantanée.
+- Garde-fou : si le JavaScript ne démarre pas en 4 s, tout le contenu s'affiche.
 
 ## 8. Confidentialité
 
@@ -158,9 +131,9 @@ Le fichier original (`assets/originals/logo-moonlight-cafe-original.png`) n'est 
 
 ## 9. Sources des informations
 
-- Zoom Japon / PARI PARI, 5 juin 2025 (contenu sponsorisé) : ouverture en juillet 2024, inspiration Corée / Japon, tons beiges évoquant la lune, matcha d'Uji tamisé, pâtisseries maison, accessoires en vente.
 - specialtycoffee.paris : torréfacteur Fève, matcha bio d'Uji, horaires, ouverture juillet 2024.
 - Instagram @moonlight.cafe.paris (extrait de bio) : « Specialty coffee – Fève · Ceremonial organic matcha from Uji ».
+- Zoom Japon / PARI PARI, 5 juin 2025 : ouverture en juillet 2024, pâtisseries maison, accessoires en vente.
 - Carte et prix : données transmises (octobre 2026).
 
-Voir `docs/VERIFICATION.md` (tests réalisés) et `docs/VALIDATION-CLIENT.md` (points à faire confirmer).
+Voir `docs/DIRECTION-ARTISTIQUE.md`, `docs/VERIFICATION.md` (tests et mesures) et `docs/VALIDATION-CLIENT.md` (points à faire confirmer).

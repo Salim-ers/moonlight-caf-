@@ -55,9 +55,7 @@ function hoursFor(isoDate: string, day: number) {
 }
 
 export type OpenState =
-  | { status: "open"; closesAt: string }
-  | { status: "opens-later"; opensAt: string }
-  | { status: "closed"; nextDay: number; opensAt: string };
+  { status: "open"; closesAt: string } | { status: "opens-later"; opensAt: string } | { status: "closed"; nextDay: number; opensAt: string };
 
 /** Calcule l'état d'ouverture à partir de l'heure de Paris et des exceptions configurées. */
 export function getOpenState(date = new Date()): OpenState {

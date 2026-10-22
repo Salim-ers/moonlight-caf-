@@ -26,7 +26,6 @@ export const weeklyHours: DayHours[] = [
  *   { date: "2026-12-31", open: "09:30", close: "15:00" },
  */
 export type HoursException =
-  | { date: string; closed: true; note?: { fr: string; en: string } }
-  | { date: string; open: string; close: string; note?: { fr: string; en: string } };
+  { date: string; closed: true; note?: { fr: string; en: string } } | { date: string; open: string; close: string; note?: { fr: string; en: string } };
 
 export const exceptions: HoursException[] = [];

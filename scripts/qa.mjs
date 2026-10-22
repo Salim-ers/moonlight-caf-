@@ -1,161 +1,317 @@
+/**
+ * Recette fonctionnelle automatisée — Moonlight Café V2.
+ * Usage : npm run build && npm run start, puis :
+ *   CHROME_PATH="C:/Program Files/Google/Chrome/Application/chrome.exe" node scripts/qa.mjs http://localhost:3000
+ */
 import { chromium } from "playwright-core";
-// Usage : npm run build && npm run start, puis : CHROME_PATH=/chemin/vers/chrome node scripts/qa.mjs http://localhost:3000
-const BASE = process.argv[2] ?? "http://localhost:3100";
+
+const BASE = process.argv[2] ?? "http://localhost:3000";
 const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH });
 const results = [];
-const ok = (name, pass, info = "") => { results.push([pass ? "PASS" : "FAIL", name, info]); };
-const errorsAll = [];
+const ok = (name, pass, info = "") => results.push([pass ? "PASS" : "FAIL", name, info]);
+const errors = [];
 async function newPage(opts = {}) {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, ...opts });
   const p = await ctx.newPage();
-  p.on("pageerror", (e) => errorsAll.push(`${p.url()} pageerror ${e.message}`));
-  p.on("console", (m) => { if (m.type() === "error" && !/google|maps|gstatic|ERR_|net::/.test(m.text())) errorsAll.push(`${p.url()} console ${m.text().slice(0, 200)}`); });
-  await p.addInitScript(() => sessionStorage.setItem("ml-intro", "1"));
+  p.on("pageerror", (e) => errors.push(`${p.url()} pageerror ${e.message}`));
+  p.on("console", (m) => {
+    if (m.type() === "error" && !/google|maps|gstatic|ERR_|net::|404/.test(m.text())) errors.push(`${p.url()} console ${m.text().slice(0, 200)}`);
+  });
   return p;
 }
-const routes = ["/", "/la-carte", "/nos-favoris", "/le-cafe", "/notre-histoire", "/nous-trouver", "/mentions-legales", "/confidentialite", "/cookies",
-  "/en", "/en/menu", "/en/favourites", "/en/the-cafe", "/en/our-story", "/en/find-us", "/en/legal-notice", "/en/privacy", "/en/cookies"];
 
-// 1. Every route: status, title, h1, lang, canonical, hreflang, images alt, broken images, internal links
+const routes = [
+  "/",
+  "/la-carte",
+  "/nos-favoris",
+  "/le-cafe",
+  "/notre-histoire",
+  "/nous-trouver",
+  "/mentions-legales",
+  "/confidentialite",
+  "/cookies",
+  "/en",
+  "/en/menu",
+  "/en/favourites",
+  "/en/the-cafe",
+  "/en/our-story",
+  "/en/find-us",
+  "/en/legal-notice",
+  "/en/privacy",
+  "/en/cookies",
+];
+const pair = {
+  "/": "home",
+  "/en": "home",
+  "/la-carte": "menu",
+  "/en/menu": "menu",
+  "/nos-favoris": "favorites",
+  "/en/favourites": "favorites",
+  "/le-cafe": "cafe",
+  "/en/the-cafe": "cafe",
+  "/notre-histoire": "story",
+  "/en/our-story": "story",
+  "/nous-trouver": "visit",
+  "/en/find-us": "visit",
+};
+
+// 1. Toutes les pages : statut, h1 unique, langue, SEO, images, débordement, CJK, photos utilisées
 const links = new Set();
+const photoPages = new Map();
 const page = await newPage();
 for (const r of routes) {
   const res = await page.goto(BASE + r, { waitUntil: "networkidle" });
-  await page.waitForTimeout(400);
   const d = await page.evaluate(async () => {
-    // scroll to load lazy images
-    for (let y = 0; y < document.documentElement.scrollHeight; y += 700) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 60)); }
-    await new Promise((r) => setTimeout(r, 800));
+    for (let y = 0; y < document.documentElement.scrollHeight; y += 600) {
+      window.scrollTo({ top: y, behavior: "instant" });
+      await new Promise((r) => setTimeout(r, 40));
+    }
+    await new Promise((r) => setTimeout(r, 600));
     const imgs = [...document.images];
+    const photos = [...new Set(imgs.map((i) => decodeURIComponent(i.currentSrc || i.src).match(/media\/(\d\d-[a-z0-9-]+)\./)?.[1]).filter(Boolean))];
     return {
-      title: document.title, lang: document.documentElement.lang,
-      h1: [...document.querySelectorAll("h1")].map((h) => h.textContent.trim()),
-      canonical: document.querySelector('link[rel=canonical]')?.href,
-      alternates: [...document.querySelectorAll('link[rel=alternate][hreflang]')].map((l) => l.hreflang),
-      desc: document.querySelector('meta[name=description]')?.content?.length ?? 0,
+      lang: document.documentElement.lang,
+      h1: document.querySelectorAll("h1").length,
+      alternates: document.querySelectorAll("link[rel=alternate][hreflang]").length,
+      desc: document.querySelector("meta[name=description]")?.content?.length ?? 0,
       og: !!document.querySelector('meta[property="og:image"]'),
-      noAlt: imgs.filter((i) => !i.hasAttribute("alt")).length,
-      broken: imgs.filter((i) => i.complete && i.naturalWidth === 0).map((i) => i.src).slice(0, 3),
-      links: [...document.querySelectorAll("a[href]")].map((a) => a.getAttribute("href")),
-      overflow: document.documentElement.scrollWidth - window.innerWidth,
       jsonld: !!document.querySelector('script[type="application/ld+json"]'),
+      noAlt: imgs.filter((i) => !i.hasAttribute("alt")).length,
+      broken: imgs.filter((i) => i.complete && i.naturalWidth === 0).length,
+      overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      cjk: /[\u3040-\u30ff\u3400-\u9fff]/.test(document.body.innerText),
+      asianRefs: /japonais|coréen|chinois|japanese|korean|chinese/i.test(document.body.innerText),
+      links: [...document.querySelectorAll("a[href]")].map((a) => a.getAttribute("href")),
+      photos,
     };
   });
   d.links.forEach((l) => links.add(l));
-  ok(`route ${r}`, res.status() === 200 && d.h1.length === 1 && d.noAlt === 0 && d.broken.length === 0 && d.overflow <= 0 && d.alternates.length === 3 && d.desc > 50 && d.og && d.jsonld && d.lang === (r.startsWith("/en") ? "en" : "fr"),
-    `status=${res.status()} h1=${d.h1.length} noAlt=${d.noAlt} broken=${d.broken.join(",")} overflow=${d.overflow} hreflang=${d.alternates.join("/")} title="${d.title}"`);
+  d.photos.forEach((ph) => {
+    const set = photoPages.get(ph) ?? new Set();
+    set.add(pair[r] ?? r);
+    photoPages.set(ph, set);
+  });
+  ok(
+    `page ${r}`,
+    res.status() === 200 &&
+      d.h1 === 1 &&
+      d.lang === (r.startsWith("/en") ? "en" : "fr") &&
+      d.alternates === 3 &&
+      d.desc > 50 &&
+      d.og &&
+      d.jsonld &&
+      !d.noAlt &&
+      !d.broken &&
+      d.overflow <= 0 &&
+      !d.cjk &&
+      !d.asianRefs,
+    `status=${res.status()} h1=${d.h1} hreflang=${d.alternates} noAlt=${d.noAlt} broken=${d.broken} overflow=${d.overflow} cjk=${d.cjk} refs=${d.asianRefs} photos=${d.photos.length}`,
+  );
 }
-// 2. internal links resolve
+const dup = [...photoPages].filter(([, s]) => s.size > 1);
+ok(
+  `photos : ${photoPages.size}/26 affichées, aucune sur deux pages`,
+  photoPages.size === 26 && dup.length === 0,
+  dup.map(([p, s]) => `${p}:${[...s]}`).join(" "),
+);
+
+// 2. Liens internes et externes
+let bad = 0;
 for (const l of links) {
   if (!l.startsWith("/")) continue;
-  const path = l.split("#")[0] || "/";
-  const res = await page.request.get(BASE + path);
-  if (res.status() !== 200) ok(`link ${l}`, false, `status ${res.status()}`);
+  const res = await page.request.get(BASE + (l.split("#")[0] || "/"));
+  if (res.status() !== 200) {
+    bad++;
+    ok(`lien ${l}`, false, `status ${res.status()}`);
+  }
 }
-ok(`internal links checked (${[...links].filter((l) => l.startsWith("/")).length})`, true);
-const external = [...links].filter((l) => /^(https?:|mailto:)/.test(l));
-ok("external links", external.every((l) => /instagram\.com\/moonlight\.cafe\.paris|google\.com\/maps|mailto:moonlightcafeparis@gmail\.com|vercel\.com/.test(l)), [...new Set(external)].join(" | "));
+ok(`liens internes (${[...links].filter((l) => l.startsWith("/")).length})`, bad === 0);
+const external = [...new Set([...links].filter((l) => /^(https?:|mailto:)/.test(l)))];
+ok(
+  "liens externes (Instagram, Google Maps, e-mail, Vercel)",
+  external.every((l) => /instagram\.com\/moonlight\.cafe\.paris|google\.com\/maps|mailto:moonlightcafeparis@gmail\.com|vercel\.com/.test(l)),
+  external.join(" | "),
+);
 
 // 3. 404
 for (const r of ["/inexistant", "/en/nothing"]) {
   const res = await page.goto(BASE + r);
-  ok(`404 ${r}`, res.status() === 404 && (await page.locator("h1").count()) === 1, `status=${res.status()}`);
+  const lang = await page.evaluate(() => document.documentElement.lang);
+  ok(`404 ${r}`, res.status() === 404 && lang === (r.startsWith("/en") ? "en" : "fr"));
 }
 
-// 4. Menu tabs & prices
-await page.goto(BASE + "/la-carte", { waitUntil: "networkidle" });
-await page.getByRole("tab", { name: "Matcha" }).click();
-await page.waitForTimeout(900);
-const cats = await page.locator("[data-menu-category] h2").allTextContents();
-ok("menu tab Matcha filters", cats[0] === "Matcha" && !cats.includes("Classiques"), cats.join(","));
-ok("menu hash updated", page.url().endsWith("#matcha"), page.url());
-const prices = await page.evaluate(() => [...document.querySelectorAll("#menu-panel li")].map((l) => l.textContent.replace(/\s+/g, " ").trim()));
-ok("strawberry price 6,80", prices.some((p) => /Iced Strawberry Matcha Latte.*6,80/.test(p)), prices.slice(0, 6).join(" | "));
-await page.getByRole("tab", { name: "Toute la carte" }).click(); await page.waitForTimeout(600);
-const count = await page.locator("#menu-panel li").count();
-ok("full menu items (33 produits + 5 suppléments)", count === 38, `count=${count}`);
-await page.goto(BASE + "/la-carte#patisseries", { waitUntil: "networkidle" }); await page.waitForTimeout(1200);
-const c2 = await page.locator("[data-menu-category] h2").first().textContent();
-ok("deep link #patisseries selects tab", c2 === "Pâtisseries", c2);
+// 4. Transition de page : logo officiel complet, centré, non recadré, rapide
+{
+  const p = await newPage();
+  await p.goto(BASE + "/", { waitUntil: "networkidle" });
+  const t0 = Date.now();
+  await p.click('header a[href="/la-carte"]');
+  await p.waitForTimeout(160);
+  const logo = await p.evaluate(() => {
+    const img = document.querySelector(".pt .pt-logo");
+    const r = img.getBoundingClientRect();
+    return {
+      state: document.querySelector(".pt").dataset.state,
+      src: img.getAttribute("src"),
+      fit: getComputedStyle(img).objectFit,
+      ratio: r.width / r.height,
+      natural: img.naturalWidth / img.naturalHeight,
+      inside: r.left >= 0 && r.top >= 0 && r.right <= innerWidth && r.bottom <= innerHeight,
+      dx: Math.abs(r.left + r.width / 2 - innerWidth / 2),
+      dy: Math.abs(r.top + r.height / 2 - innerHeight / 2),
+    };
+  });
+  ok(
+    "transition : logo complet affiché, centré, ratio d'origine",
+    logo.state !== "idle" &&
+      /moonlight-logo\.webp/.test(logo.src) &&
+      logo.fit === "contain" &&
+      Math.abs(logo.ratio - logo.natural) < 0.02 &&
+      logo.inside &&
+      logo.dx < 2 &&
+      logo.dy < 2,
+    JSON.stringify(logo),
+  );
+  await p.waitForFunction(() => document.querySelector(".pt").dataset.state === "idle" && location.pathname === "/la-carte", null, { timeout: 4000 });
+  const ms = Date.now() - t0;
+  const after = await p.evaluate(() => ({ h1: document.querySelector("h1").textContent, focus: document.activeElement?.id, title: document.title }));
+  ok(
+    "transition : arrivée sur /la-carte, focus sur le contenu",
+    /La carte/.test(after.h1) && after.focus === "main" && /La carte/.test(after.title),
+    `${ms} ms`,
+  );
+  ok("transition : durée totale < 900 ms", ms < 900, `${ms} ms`);
+  await p.goBack();
+  await p.waitForFunction(() => location.pathname === "/", null, { timeout: 4000 });
+  ok("bouton Précédent du navigateur", (await p.evaluate(() => document.querySelector("h1").textContent)).includes("pause"));
+}
 
-// 5. Gallery lightbox
-await page.goto(BASE + "/le-cafe", { waitUntil: "networkidle" });
-await page.getByRole("button", { name: "Les gestes" }).click(); await page.waitForTimeout(800);
-const n = await page.locator("#main ul li button").count();
-await page.locator("#main ul li button").first().click(); await page.waitForTimeout(700);
-const dlg = page.getByRole("dialog");
-const c1 = await dlg.locator("[aria-live]").textContent();
-await page.keyboard.press("ArrowRight"); await page.waitForTimeout(400);
-const c3 = await dlg.locator("[aria-live]").textContent();
-await page.keyboard.press("Escape"); await page.waitForTimeout(400);
-ok("gallery filter + lightbox + keyboard", n === 4 && /1 sur 4/.test(c1) && /2 sur 4/.test(c3) && (await page.getByRole("dialog").count()) === 0, `n=${n} ${c1} -> ${c3}`);
+// 5. Menu mobile
+{
+  const p = await newPage({ viewport: { width: 375, height: 667 }, isMobile: true, hasTouch: true });
+  await p.goto(BASE + "/", { waitUntil: "networkidle" });
+  await p.click('button[aria-controls="mobile-menu"]');
+  await p.waitForTimeout(500);
+  const open = await p.evaluate(() => ({
+    inert: document.getElementById("main").hasAttribute("inert"),
+    focusInMenu: !!document.activeElement?.closest("#mobile-menu"),
+    logo: !!document.querySelector('header img[src*="moonlight-logo"]'),
+  }));
+  ok("menu mobile : ouverture, contenu inerte, focus dans le menu, logo complet", open.inert && open.focusInMenu && open.logo);
+  await p.keyboard.press("Escape");
+  await p.waitForTimeout(400);
+  const closed = await p.evaluate(() => ({
+    expanded: document.querySelector('button[aria-controls="mobile-menu"]').getAttribute("aria-expanded"),
+    focusToggle: document.activeElement?.getAttribute("aria-controls") === "mobile-menu",
+    inert: document.getElementById("main").hasAttribute("inert"),
+  }));
+  ok("menu mobile : Échap ferme et rend le focus au bouton", closed.expanded === "false" && closed.focusToggle && !closed.inert);
+  await p.click('button[aria-controls="mobile-menu"]');
+  await p.waitForTimeout(500);
+  await p.click('#mobile-menu a[href="/nous-trouver"]');
+  await p.waitForFunction(() => location.pathname === "/nous-trouver" && document.querySelector(".pt").dataset.state === "idle", null, { timeout: 4000 });
+  ok("menu mobile : navigation", true);
+}
 
-// 6. Map consent
-await page.goto(BASE + "/nous-trouver", { waitUntil: "networkidle" });
-const before = await page.locator("iframe").count();
-await page.getByRole("button", { name: "Afficher le plan" }).click(); await page.waitForTimeout(500);
-const after = await page.locator("iframe").count();
-await page.goto(BASE + "/cookies", { waitUntil: "networkidle" }); await page.waitForTimeout(500);
-const state = await page.getByText("Autorisé sur cet appareil").count();
-await page.getByRole("button", { name: "Retirer mon accord" }).click(); await page.waitForTimeout(300);
-await page.goto(BASE + "/nous-trouver", { waitUntil: "networkidle" });
-const after2 = await page.locator("iframe").count();
-ok("map loads only after consent, revocable", before === 0 && after === 1 && state === 1 && after2 === 0, `${before}/${after}/${state}/${after2}`);
+// 6. Langue
+{
+  const p = await newPage();
+  await p.goto(BASE + "/la-carte", { waitUntil: "networkidle" });
+  const target = await p.getAttribute("header a[hreflang=en]", "href");
+  ok("sélecteur de langue → page équivalente", target === "/en/menu", target);
+}
 
-// 7. Page transition navigation
-await page.goto(BASE + "/", { waitUntil: "networkidle" }); await page.waitForTimeout(2500);
-await page.locator("header nav").getByRole("link", { name: "Le café" }).click();
-await page.waitForURL("**/le-cafe", { timeout: 5000 }); await page.waitForTimeout(1600);
-const vis = await page.evaluate(() => getComputedStyle(document.querySelector("[data-transition-overlay]")).visibility);
-ok("client navigation with transition", page.url().endsWith("/le-cafe") && vis === "hidden" && (await page.locator("h1").textContent()) === "Le café", `overlay=${vis}`);
+// 7. Carte
+{
+  const p = await newPage();
+  await p.goto(BASE + "/la-carte#patisseries", { waitUntil: "networkidle" });
+  await p.waitForTimeout(600);
+  const d = await p.evaluate(() => ({
+    cats: document.querySelectorAll("section[data-menu-category]").length,
+    items: document.querySelectorAll(".menu-item").length,
+    extras: document.querySelectorAll("#extras-title ~ ul li, [aria-labelledby=extras-title] ul li").length,
+    strawberry: [...document.querySelectorAll(".menu-item")].find((li) => li.textContent.includes("Iced Strawberry"))?.textContent.includes("6,80"),
+    deepLink: Math.abs(document.getElementById("patisseries").getBoundingClientRect().top) < 200,
+    photos: document.querySelectorAll('main img[src*="_next/image"]').length,
+  }));
+  ok(
+    "carte : 6 catégories, 33 produits, 5 suppléments, prix exacts, lien profond",
+    d.cats === 6 && d.items === 33 && d.extras === 5 && d.strawberry && d.deepLink && d.photos === 1,
+    JSON.stringify(d),
+  );
+}
 
-// 8. Lang switch
-await page.goto(BASE + "/la-carte", { waitUntil: "networkidle" });
-const hrefEn = await page.locator('header a[hreflang="en"]').getAttribute("href");
-ok("lang switch targets equivalent page", hrefEn === "/en/menu", hrefEn);
+// 8. Favoris : compteur et numérotation générés depuis les données
+{
+  const p = await newPage();
+  await p.goto(BASE + "/nos-favoris", { waitUntil: "networkidle" });
+  const d = await p.evaluate(() => ({
+    items: document.querySelectorAll("li.fav").length,
+    labels: [...document.querySelectorAll("li.fav .fav-text .t-eyebrow")].map((e) => e.textContent.replace(/\s/g, "")),
+    count: document.body.innerText.match(/(\d+)\s+CRÉATIONS/i)?.[1],
+  }));
+  ok(
+    "favoris : 6 créations numérotées 01/06 → 06/06",
+    d.items === 6 && d.count === "6" && d.labels.join() === "01/06,02/06,03/06,04/06,05/06,06/06",
+    JSON.stringify(d),
+  );
+}
 
-// 9. Mobile menu
-const m = await newPage({ viewport: { width: 375, height: 667 }, isMobile: true, hasTouch: true });
-await m.goto(BASE + "/", { waitUntil: "networkidle" }); await m.waitForTimeout(2500);
-await m.getByRole("button", { name: "Ouvrir le menu" }).click(); await m.waitForTimeout(900);
-const inert = await m.evaluate(() => document.querySelector("main").hasAttribute("inert"));
-const focused = await m.evaluate(() => document.activeElement?.textContent);
-await m.keyboard.press("Escape"); await m.waitForTimeout(600);
-const closed = await m.evaluate(() => !document.querySelector("main").hasAttribute("inert"));
-await m.getByRole("button", { name: "Ouvrir le menu" }).click(); await m.waitForTimeout(900);
-await m.locator("#mobile-menu").getByRole("link", { name: "La carte" }).click();
-await m.waitForURL("**/la-carte", { timeout: 5000 }); await m.waitForTimeout(1500);
-const ov = await m.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-ok("mobile menu: inert, focus, Esc, navigation", inert && focused === "Accueil" && closed && m.url().endsWith("/la-carte") && ov <= 0, `focus=${focused} overflow=${ov}`);
+// 9. Visionneuse
+{
+  const p = await newPage();
+  await p.goto(BASE + "/le-cafe", { waitUntil: "networkidle" });
+  await p.click(".lb-trigger >> nth=0");
+  await p.waitForTimeout(400);
+  await p.keyboard.press("ArrowRight");
+  await p.waitForTimeout(300);
+  const counter = await p.evaluate(() => document.querySelector(".lightbox p")?.textContent);
+  await p.keyboard.press("Escape");
+  await p.waitForTimeout(300);
+  ok("visionneuse : ouverture, flèche, Échap", counter === "Photo 2 sur 6" && !(await p.$(".lightbox")), counter);
+}
 
-// 10. Reduced motion: everything visible, no intro
-const rm = await newPage({ reducedMotion: "reduce" });
-await rm.goto(BASE + "/", { waitUntil: "networkidle" }); await rm.waitForTimeout(600);
-const hidden = await rm.evaluate(() => {
-  const cls = document.documentElement.className;
-  const bad = [...document.querySelectorAll("[data-anim], .line-inner, h1, h2, p")].filter((e) => !e.closest("[aria-hidden=true]")).filter((e) => { const s = getComputedStyle(e); return s.opacity === "0" || s.visibility === "hidden"; }).length;
-  return { cls, bad, pins: document.querySelectorAll(".pin-spacer").length };
-});
-ok("reduced motion: no hidden content, no pin, no intro", hidden.bad === 0 && hidden.pins === 0 && !/intro|motion\b/.test(hidden.cls.replace("motion-failsafe", "")), JSON.stringify(hidden));
+// 10. Plan Google Maps avec consentement
+{
+  const p = await newPage();
+  await p.goto(BASE + "/nous-trouver", { waitUntil: "networkidle" });
+  const before = await p.$$eval("iframe", (f) => f.length);
+  await p.click("text=Afficher le plan");
+  await p.waitForTimeout(400);
+  const after = await p.$$eval("iframe", (f) => f.length);
+  await p.goto(BASE + "/cookies", { waitUntil: "networkidle" });
+  const state = await p.textContent("text=Autorisé sur cet appareil").catch(() => null);
+  await p.click("text=Retirer mon accord");
+  await p.goto(BASE + "/nous-trouver", { waitUntil: "networkidle" });
+  const revoked = await p.$$eval("iframe", (f) => f.length);
+  ok("plan : aucun iframe avant accord, iframe après, retrait effectif", before === 0 && after === 1 && !!state && revoked === 0);
+}
 
-// 11. Intro plays once
-const ip = await (await browser.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
-const t0 = Date.now();
-await ip.goto(BASE + "/", { waitUntil: "domcontentloaded" });
-const introOn = await ip.evaluate(() => document.documentElement.classList.contains("intro"));
-await ip.waitForFunction(() => !document.documentElement.classList.contains("intro"), null, { timeout: 6000 });
-const dur = Date.now() - t0;
-await ip.reload({ waitUntil: "domcontentloaded" });
-const introAgain = await ip.evaluate(() => document.documentElement.classList.contains("intro"));
-ok("intro plays once per session, short", introOn && !introAgain && dur < 3500, `duration≈${dur}ms`);
+// 11. Animations réduites
+{
+  const p = await newPage({ reducedMotion: "reduce" });
+  await p.goto(BASE + "/", { waitUntil: "networkidle" });
+  const d = await p.evaluate(() => ({
+    motion: document.documentElement.classList.contains("js-motion"),
+    hidden: [...document.querySelectorAll("[data-reveal]")].filter((el) => Number(getComputedStyle(el).opacity) < 0.99).length,
+  }));
+  await p.click('header a[href="/le-cafe"]');
+  await p.waitForTimeout(100);
+  const overlay = await p.evaluate(() => getComputedStyle(document.querySelector(".pt")).visibility);
+  ok("réduire les animations : rien de masqué, navigation sans voile", !d.motion && d.hidden === 0 && overlay === "hidden");
+}
 
-// 12. Keyboard: skip link
-const kb = await newPage();
-await kb.goto(BASE + "/la-carte", { waitUntil: "networkidle" });
-await kb.keyboard.press("Tab");
-const skip = await kb.evaluate(() => document.activeElement?.textContent);
-ok("skip link first in tab order", skip === "Aller au contenu", skip);
+// 12. Clavier
+{
+  const p = await newPage();
+  await p.goto(BASE + "/", { waitUntil: "networkidle" });
+  await p.keyboard.press("Tab");
+  ok("clavier : lien d'évitement en premier", (await p.evaluate(() => document.activeElement?.getAttribute("href"))) === "#main");
+}
 
-console.log(results.map((r) => r.join("  ")).join("\n"));
-console.log("\nJS errors:", errorsAll.length ? [...new Set(errorsAll)].slice(0, 10).join("\n") : "none");
+ok("aucune erreur JavaScript", errors.length === 0, errors.slice(0, 5).join(" | "));
 await browser.close();
+const fails = results.filter((r) => r[0] === "FAIL");
+for (const [s, n, i] of results) console.log(`${s}  ${n}${i ? `  — ${i}` : ""}`);
+console.log(`\n${results.length - fails.length}/${results.length} réussis`);
+process.exit(fails.length ? 1 : 0);

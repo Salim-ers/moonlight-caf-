@@ -1,20 +1,20 @@
 {
   "name": "moonlight-cafe",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/check-photos.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
+    "check:photos": "node scripts/check-photos.mjs",
     "check": "npm run typecheck && npm run lint && npm run build",
-    "qa": "node scripts/qa.mjs http://localhost:3000"
+    "qa": "node scripts/qa.mjs http://localhost:3000",
+    "brand-assets": "node scripts/generate-brand-assets.mjs"
   },
   "dependencies": {
-    "@gsap/react": "^2.1.2",
-    "gsap": "^3.15.0",
-    "lenis": "^1.3.27",
     "lucide-react": "^1.61.0",
     "next": "16.4.2",
     "react": "19.3.0",

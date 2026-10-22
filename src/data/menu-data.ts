@@ -3,14 +3,16 @@
  *
  * - Prix en euros (nombre décimal). Modifiez-les ici, toutes les pages suivent.
  * - Pour ajouter une boisson : copiez une ligne dans la bonne catégorie.
- * - `photo` est optionnel : n'associez une photo que si elle montre réellement le produit.
  * - `note` sert aux précisions écrites sur la carte (variantes, composition).
+ * - `tone` : couleur d'accent de la catégorie sur la page « La carte ».
  *
  * Données transcrites depuis la carte fournie (octobre 2026). Les descriptions
  * de parfums des thés n'ont pas été reprises faute de visuel lisible : à compléter
  * après relecture de la carte physique.
+ * Aucune photo n'est rattachée aux produits : chaque photographie n'a qu'un seul
+ * emplacement sur le site (voir `photo-manifest.ts`).
  */
-import type { PhotoKey } from "./gallery-data";
+import type { Tone } from "@/lib/tones";
 
 type L = { fr: string; en: string };
 
@@ -19,16 +21,15 @@ export type MenuItem = {
   name: L;
   price: number;
   note?: L;
-  photo?: PhotoKey;
-  /** Mis en avant dans la sélection « Nos favoris ». */
-  favorite?: boolean;
+  /** Variantes listées une à une (parfums de cookies…). */
+  variants?: { fr: string[]; en: string[] };
 };
 
 export type MenuCategory = {
   id: string;
   title: L;
   subtitle?: L;
-  photo?: PhotoKey;
+  tone: Tone;
   items: MenuItem[];
 };
 
@@ -39,7 +40,7 @@ export const menu: MenuCategory[] = [
     id: "classiques",
     title: { fr: "Classiques", en: "Classics" },
     subtitle: { fr: "Café de spécialité torréfié par Fève", en: "Specialty coffee roasted by Fève" },
-    photo: "latteTop",
+    tone: "caramel",
     items: [
       { id: "espresso", name: same("Espresso"), price: 2.5 },
       { id: "double-espresso", name: same("Double Espresso"), price: 3.5 },
@@ -57,11 +58,14 @@ export const menu: MenuCategory[] = [
   {
     id: "matcha",
     title: { fr: "Matcha", en: "Matcha" },
-    subtitle: { fr: "Matcha de cérémonie", en: "Ceremonial matcha" },
-    photo: "matchaTop",
+    subtitle: {
+      fr: "Matcha bio de cérémonie d'Uji, tamisé et fouetté à la commande",
+      en: "Organic ceremonial matcha from Uji, sifted and whisked to order",
+    },
+    tone: "matcha",
     items: [
-      { id: "matcha-latte", name: same("Matcha Latte"), price: 5.5, photo: "matchaTop", favorite: true },
-      { id: "iced-matcha-latte", name: same("Iced Matcha Latte"), price: 6, photo: "icedCup", favorite: true },
+      { id: "matcha-latte", name: same("Matcha Latte"), price: 5.5 },
+      { id: "iced-matcha-latte", name: same("Iced Matcha Latte"), price: 6 },
       {
         id: "usucha",
         name: same("Usucha"),
@@ -69,24 +73,26 @@ export const menu: MenuCategory[] = [
         price: 5,
       },
       { id: "iced-mango-matcha-latte", name: same("Iced Mango Matcha Latte"), price: 6.8 },
-      { id: "iced-strawberry-matcha-latte", name: same("Iced Strawberry Matcha Latte"), price: 6.8, photo: "strawberry", favorite: true },
+      { id: "iced-strawberry-matcha-latte", name: same("Iced Strawberry Matcha Latte"), price: 6.8 },
     ],
   },
   {
     id: "sans-cafe",
     title: { fr: "Sans café", en: "Not coffee" },
-    photo: "greenBlue",
+    subtitle: { fr: "Sans une goutte de café", en: "Without a drop of coffee" },
+    tone: "lavender",
     items: [
       { id: "hojicha-latte", name: same("Hojicha Latte"), price: 5.5 },
       { id: "chai-latte", name: same("Chai Latte"), price: 5.5 },
       { id: "sesame-latte", name: { fr: "Sésame Latte", en: "Sesame Latte" }, price: 5.5 },
-      { id: "blue-latte", name: same("Blue Latte"), price: 5.5, photo: "greenBlue", favorite: true },
+      { id: "blue-latte", name: same("Blue Latte"), price: 5.5 },
       { id: "chocolat-chaud", name: { fr: "Chocolat chaud", en: "Hot chocolate" }, price: 5 },
     ],
   },
   {
     id: "thes-bio",
     title: { fr: "Thés bio", en: "Organic teas" },
+    tone: "butter",
     items: [
       { id: "blanc-yunnan", name: { fr: "Blanc Yunan", en: "Yunan white tea" }, price: 5 },
       { id: "vert-genmaicha", name: { fr: "Vert Genmaicha", en: "Genmaicha green tea" }, price: 5 },
@@ -102,6 +108,7 @@ export const menu: MenuCategory[] = [
   {
     id: "boissons-fraiches",
     title: { fr: "Boissons fraîches", en: "Soft drinks" },
+    tone: "blue",
     items: [
       { id: "limonade-bio", name: { fr: "Limonade bio", en: "Organic lemonade" }, price: 5.5 },
       { id: "the-glace-bio", name: { fr: "Thés glacés bio", en: "Organic iced teas" }, price: 5.5 },
@@ -114,18 +121,16 @@ export const menu: MenuCategory[] = [
     id: "patisseries",
     title: { fr: "Pâtisseries", en: "Pastries" },
     subtitle: { fr: "Faites maison", en: "Homemade" },
-    photo: "cookiesClose",
+    tone: "pink",
     items: [
       { id: "cake", name: same("Cake"), price: 4.5 },
       {
         id: "cookie",
         name: same("Cookie"),
         price: 4.5,
-        photo: "cookiesClose",
-        favorite: true,
-        note: {
-          fr: "Matcha chocolat blanc, pépites chocolat noir, pécan choco coco, beurre de cacahuète et cacao",
-          en: "Matcha & white chocolate, dark chocolate chip, pecan choc coconut, peanut butter & cocoa",
+        variants: {
+          fr: ["Matcha chocolat blanc", "Pépites chocolat noir", "Pécan choco coco", "Beurre de cacahuète et cacao"],
+          en: ["Matcha & white chocolate", "Dark chocolate chip", "Pecan choc coconut", "Peanut butter & cocoa"],
         },
       },
       {
@@ -166,3 +171,5 @@ export function findItem(id: string) {
   }
   throw new Error(`Menu item not found: ${id}`);
 }
+
+export const menuItemCount = menu.reduce((n, c) => n + c.items.length, 0);

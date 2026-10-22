@@ -1,19 +1,17 @@
 "use client";
 
-import { useMotion } from "@/components/motion/MotionProvider";
-
-export function BackToTop({ label }: { label: string }) {
-  const { scrollTo } = useMotion();
+export function BackToTop({ label, className = "" }: { label: string; className?: string }) {
   return (
     <button
       type="button"
       onClick={() => {
-        scrollTo(0);
+        const reduce = !document.documentElement.classList.contains("js-motion");
+        window.scrollTo({ top: 0, behavior: reduce ? "instant" : "smooth" });
         document.getElementById("main")?.focus({ preventScroll: true });
       }}
-      className="link-draw min-h-11"
+      className={`link-draw min-h-11 ${className}`}
     >
-      {label}
+      {label} ↑
     </button>
   );
 }

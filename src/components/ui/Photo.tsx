@@ -1,33 +1,37 @@
 import Image from "next/image";
-import { photos, type PhotoKey } from "@/data/gallery-data";
+import { photoManifest, type PhotoId } from "@/data/photo-manifest";
 import type { Locale } from "@/i18n/config";
 
 type Props = {
-  id: PhotoKey;
+  id: PhotoId;
   locale: Locale;
   sizes: string;
   className?: string;
+  /** Image principale de la page (LCP) : préchargée. */
   preload?: boolean;
-  /** Remplace le point focal défini dans gallery-data. */
+  /** Recadrage propre à cet emplacement (sinon le point focal du registre). */
   focus?: string;
-  /** Pour une image purement décorative (le texte voisin la décrit déjà). */
+  /** Le texte voisin décrit déjà l'image. */
   decorative?: boolean;
-  fill?: boolean;
+  quality?: 60 | 72;
 };
 
-/** Photo du café optimisée (AVIF/WebP, tailles responsive, flou de chargement, pas de CLS). */
-export function Photo({ id, locale, sizes, className = "", preload, focus, decorative, fill = true }: Props) {
-  const p = photos[id];
+/**
+ * Photo du café optimisée : AVIF/WebP, tailles responsive, flou de chargement, dimensions réservées (pas de CLS).
+ * Toujours en `fill` : le conteneur parent fixe le format et le masque.
+ */
+export function Photo({ id, locale, sizes, className = "", preload, focus, decorative, quality = 60 }: Props) {
+  const p = photoManifest[id];
   return (
     <Image
       src={p.src}
       alt={decorative ? "" : p.alt[locale]}
       sizes={sizes}
       placeholder="blur"
-      quality={82}
+      quality={quality}
       preload={preload}
-      {...(fill ? { fill: true } : {})}
-      className={`${fill ? "object-cover" : "h-auto w-full"} ${className}`}
+      fill
+      className={`object-cover ${className}`}
       style={{ objectPosition: focus ?? p.focus }}
     />
   );

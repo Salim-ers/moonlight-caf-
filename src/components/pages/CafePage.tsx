@@ -1,78 +1,179 @@
-import { PageHero } from "@/components/ui/PageHero";
-import { Lines, Fade, ClipReveal, Parallax } from "@/components/motion/Reveal";
+import type { CSSProperties, ReactNode } from "react";
+import { Expand } from "lucide-react";
+import { Lines, Reveal, type RevealVariant } from "@/components/motion/Reveal";
+import { PageHead } from "@/components/ui/PageHead";
 import { Photo } from "@/components/ui/Photo";
-import { HorizontalGallery } from "@/components/gallery/HorizontalGallery";
-import { GalleryGrid } from "@/components/gallery/GalleryGrid";
-import { ButtonLink } from "@/components/ui/Button";
+import { ButtonLink } from "@/components/ui/ButtonLink";
+import { LightboxProvider, LightboxTrigger } from "@/components/gallery/Lightbox";
+import { photoManifest, type PhotoId } from "@/data/photo-manifest";
 import { getDictionary } from "@/i18n";
 import { href, type Locale } from "@/i18n/config";
 
-export function CafePage({ locale }: { locale: Locale }) {
-  const t = getDictionary(locale).cafePage;
-  const common = getDictionary(locale).common;
+/** Les six photographies réservées à cette page, dans l'ordre de lecture (et de la visionneuse). */
+const PHOTOS = ["p22", "p04", "p24", "p01", "p17", "p26"] as const satisfies readonly PhotoId[];
+
+function Shot({
+  i,
+  locale,
+  variant,
+  className = "",
+  sizes,
+  radius = "1.75rem",
+  caption,
+  preload,
+}: {
+  i: number;
+  locale: Locale;
+  variant: RevealVariant | "enter";
+  className?: string;
+  sizes: string;
+  radius?: string;
+  caption?: ReactNode;
+  preload?: boolean;
+}) {
+  const frame = (
+    <div className="zoom absolute inset-0">
+      <Photo
+        id={PHOTOS[i]}
+        locale={locale}
+        sizes={sizes}
+        preload={preload}
+        quality={preload ? 72 : 60}
+        className="transition-transform duration-[1200ms] ease-[var(--ease-out)] group-hover:scale-[1.04]"
+      />
+    </div>
+  );
+  const style = { "--clip-r": radius, borderRadius: radius } as CSSProperties;
   return (
-    <>
-      <PageHero title={t.title} lede={t.lede} photo="benches" locale={locale} layout="split" />
+    <figure className={className}>
+      <LightboxTrigger index={i} className="relative block h-full w-full overflow-hidden text-left">
+        {variant === "enter" ? (
+          <div className="enter-rise relative h-full w-full overflow-hidden bg-lavender" style={{ ...style, "--d": "0.08s" } as CSSProperties}>
+            {frame}
+          </div>
+        ) : (
+          <Reveal variant={variant} className="relative h-full w-full overflow-hidden bg-lavender" style={style}>
+            {frame}
+          </Reveal>
+        )}
+        <span
+          aria-hidden="true"
+          className="absolute bottom-3 right-3 flex h-11 w-11 scale-75 items-center justify-center rounded-full bg-ivory text-ink opacity-0 transition-all duration-500 group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100"
+        >
+          <Expand className="h-4 w-4" strokeWidth={1.8} />
+        </span>
+      </LightboxTrigger>
+      {caption ? <figcaption className="t-small mt-3 text-ink/70">{caption}</figcaption> : null}
+    </figure>
+  );
+}
+
+/**
+ * Le café : une mise en page de magazine (grande ouverture, verticales, diptyque, espaces négatifs),
+ * chaque photo avec sa propre révélation, et la visionneuse sur les seules photos de cette page.
+ */
+export function CafePage({ locale }: { locale: Locale }) {
+  const t = getDictionary(locale);
+  const c = t.cafePage;
+  const items = PHOTOS.map((id) => ({ src: photoManifest[id].src, alt: photoManifest[id].alt[locale] }));
+  return (
+    <LightboxProvider items={items} labels={c.gallery}>
+      <PageHead tone="lavender" title={c.title} tagline={c.tagline} lede={c.lede} />
+      <div className="bg-[var(--color-lavender-soft)] pb-16 md:pb-24">
+        <div className="wrap">
+          <Shot
+            i={0}
+            locale={locale}
+            variant="enter"
+            preload
+            sizes="(min-width: 640px) 100vw, 204vw"
+            className="aspect-[4/5] sm:aspect-[16/9] lg:aspect-[21/9]"
+            radius="2rem"
+          />
+        </div>
+      </div>
 
       {/* L'espace */}
-      <section aria-labelledby="space-title" className="bg-paper py-20 md:py-32">
-        <div className="wrap grid gap-12 md:grid-cols-12 md:gap-8">
-          <div className="md:col-span-4 md:pt-10">
-            <Lines id="space-title" lines={[t.space.title]} className="t-h2" />
-            <Fade className="mt-6">
-              <p className="t-lede text-ink-soft">{t.space.text}</p>
-            </Fade>
+      <section aria-labelledby="space-title" className="bg-ivory py-20 md:py-32">
+        <div className="wrap grid gap-12 md:grid-cols-12 md:items-center md:gap-8">
+          <div className="md:col-span-5">
+            <p className="t-eyebrow text-lavender-deep">01</p>
+            <Lines id="space-title" lines={[c.space.title]} className="t-h1 mt-3" />
+            <Reveal as="p" className="t-lede mt-6 text-ink/80">
+              {c.space.text}
+            </Reveal>
           </div>
-          <div className="grid grid-cols-6 gap-4 md:col-span-7 md:col-start-6">
-            <ClipReveal className="col-span-6 aspect-[3/2]" parallax={8}>
-              <Photo id="roomWide" locale={locale} sizes="(min-width: 768px) 56vw, 92vw" />
-            </ClipReveal>
-            <Parallax speed={10} className="col-span-3 -mt-10 md:-mt-16">
-              <ClipReveal className="aspect-[4/5]" from="left">
-                <Photo id="roundTable" locale={locale} sizes="(min-width: 768px) 28vw, 46vw" focus="52% 55%" />
-              </ClipReveal>
-            </Parallax>
-            <Parallax speed={-6} className="col-span-3 mt-8">
-              <ClipReveal className="aspect-[4/5]" from="top">
-                <Photo id="lettering" locale={locale} sizes="(min-width: 768px) 28vw, 46vw" focus="55% 40%" />
-              </ClipReveal>
-            </Parallax>
-          </div>
+          <Shot
+            i={1}
+            locale={locale}
+            variant="clip-up"
+            sizes="(min-width: 768px) 100vw, 204vw"
+            className="aspect-[4/5] md:col-span-6 md:col-start-7"
+            radius="999px 999px 1.75rem 1.75rem"
+          />
         </div>
       </section>
 
-      <HorizontalGallery items={["baristaIced", "purplePour", "matchaPour", "layered"]} locale={locale} title={t.gestures.title} text={t.gestures.text} />
-
-      {/* Objets */}
-      <section aria-labelledby="objects-title" className="bg-cream py-20 md:py-32">
-        <div className="wrap grid items-center gap-12 md:grid-cols-12 md:gap-8">
-          <ClipReveal className="aspect-[4/5] md:col-span-5" parallax={10}>
-            <Photo id="shelves" locale={locale} sizes="(min-width: 768px) 40vw, 92vw" />
-          </ClipReveal>
-          <div className="md:col-span-5 md:col-start-8">
-            <Lines id="objects-title" lines={[t.objects.title]} className="t-h2" />
-            <Fade className="mt-6">
-              <p className="t-lede text-ink-soft">{t.objects.text}</p>
-            </Fade>
-          </div>
-        </div>
-      </section>
-
-      {/* Galerie */}
-      <section aria-labelledby="gallery-title" className="bg-paper py-20 md:py-32">
+      {/* Les gestes */}
+      <section aria-labelledby="gestures-title" className="bg-ink py-20 text-ivory md:py-32">
         <div className="wrap">
-          <div className="mb-10 flex flex-col justify-between gap-6 md:flex-row md:items-end">
-            <Lines id="gallery-title" lines={[t.gallery.title]} className="t-h1" />
+          <div className="grid gap-8 md:grid-cols-12 md:items-end">
+            <div className="md:col-span-6">
+              <p className="t-eyebrow text-lavender">02</p>
+              <Lines id="gestures-title" lines={[c.gestures.title]} className="t-h1 mt-3" />
+            </div>
+            <Reveal as="p" className="t-lede text-ivory/80 md:col-span-5 md:col-start-8">
+              {c.gestures.text}
+            </Reveal>
           </div>
-          <GalleryGrid locale={locale} />
-          <div className="mt-16 flex flex-wrap gap-3">
-            <ButtonLink href={href("visit", locale)}>{common.findUs}</ButtonLink>
-            <ButtonLink href={href("menu", locale)} variant="outline">
-              {common.seeMenu}
-            </ButtonLink>
+          <Shot i={2} locale={locale} variant="window" sizes="(min-width: 640px) 100vw, 204vw" className="mt-12 aspect-[4/5] sm:aspect-[16/9]" />
+        </div>
+      </section>
+
+      {/* Sur les étagères */}
+      <section aria-labelledby="objects-title" className="bg-butter py-20 md:py-32">
+        <div className="wrap grid gap-12 md:grid-cols-12 md:items-center md:gap-8">
+          <Shot i={3} locale={locale} variant="clip-left" sizes="(min-width: 768px) 86vw, 204vw" className="aspect-[4/5] md:col-span-5" />
+          <div className="md:col-span-5 md:col-start-8">
+            <p className="t-eyebrow text-caramel-deep">03</p>
+            <Lines id="objects-title" lines={[c.objects.title]} className="t-h1 mt-3" />
+            <Reveal as="p" className="t-lede mt-6 text-ink/80">
+              {c.objects.text}
+            </Reveal>
           </div>
         </div>
       </section>
-    </>
+
+      {/* Côté vitrine : diptyque décalé */}
+      <section aria-labelledby="window-title" className="bg-ivory pb-32 pt-20 md:pb-44 md:pt-32">
+        <div className="wrap">
+          <div className="max-w-3xl">
+            <p className="t-eyebrow text-matcha-deep">04</p>
+            <Lines id="window-title" lines={[c.window.title]} className="t-h1 mt-3" />
+            <Reveal as="p" className="t-lede mt-6 text-ink/80">
+              {c.window.text}
+            </Reveal>
+          </div>
+          <div className="mt-12 grid gap-6 md:grid-cols-12 md:gap-8">
+            <Shot i={4} locale={locale} variant="circle" sizes="(min-width: 768px) 84vw, 164vw" className="aspect-square md:col-span-6" radius="50%" />
+            <Shot
+              i={5}
+              locale={locale}
+              variant="clip-up"
+              sizes="(min-width: 768px) 86vw, 204vw"
+              className="aspect-[4/5] md:col-span-5 md:col-start-8 md:mt-32"
+            />
+          </div>
+          <Reveal className="mt-16 flex flex-wrap gap-3">
+            <ButtonLink href={href("visit", locale)} magnetic fill="var(--color-lavender)">
+              {t.common.findUs}
+            </ButtonLink>
+            <ButtonLink href={href("menu", locale)} variant="outline">
+              {t.common.seeMenu}
+            </ButtonLink>
+          </Reveal>
+        </div>
+      </section>
+    </LightboxProvider>
   );
 }

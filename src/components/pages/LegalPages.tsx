@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import { PageHero } from "@/components/ui/PageHero";
+import { PageHead } from "@/components/ui/PageHead";
 import { ConsentControl } from "@/components/ui/MapConsent";
-import { TextLink } from "@/components/ui/Button";
+import { TLink } from "@/components/motion/PageTransition";
 import { legalConfig, siteConfig } from "@/data/site-config";
 import { getDictionary } from "@/i18n";
 import { href, type Locale } from "@/i18n/config";
@@ -10,7 +10,7 @@ function Pending({ locale }: { locale: Locale }) {
   const t = getDictionary(locale).legalCommon;
   if (legalConfig.validated) return null;
   return (
-    <p role="note" className="mb-12 rounded-[3px] border border-wood/40 bg-[#f6eee4] px-5 py-4 text-[0.9375rem] text-ink">
+    <p role="note" className="mb-12 rounded-[var(--radius)] border border-caramel/40 bg-caramel-soft px-5 py-4 text-[0.9375rem] text-ink">
       {t.pending}
     </p>
   );
@@ -19,14 +19,16 @@ function Pending({ locale }: { locale: Locale }) {
 /** Valeur juridique : affichée telle quelle, ou signalée « À compléter » tant qu'elle n'est pas validée. */
 function V({ value, locale }: { value: string | null; locale: Locale }) {
   if (value) return <>{value}</>;
-  return <mark className="rounded-[2px] bg-[#f3e2cf] px-1.5 py-0.5 text-ink">[{getDictionary(locale).legalCommon.toComplete}]</mark>;
+  return <mark className="rounded-[4px] bg-butter px-1.5 py-0.5 text-ink">[{getDictionary(locale).legalCommon.toComplete}]</mark>;
 }
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="border-t border-ink/10 py-10 md:grid md:grid-cols-12 md:gap-8">
       <h2 className="t-h3 md:col-span-4">{title}</h2>
-      <div className="mt-4 space-y-4 text-ink-soft md:col-span-8 md:mt-0 [&_a]:text-ink [&_dt]:text-ink [&_strong]:font-medium [&_strong]:text-ink">{children}</div>
+      <div className="mt-4 space-y-4 text-ink-soft md:col-span-8 md:mt-0 [&_a]:text-ink [&_dt]:text-ink [&_strong]:font-medium [&_strong]:text-ink">
+        {children}
+      </div>
     </section>
   );
 }
@@ -35,12 +37,13 @@ function Shell({ title, locale, children }: { title: string; locale: Locale; chi
   const t = getDictionary(locale).legalCommon;
   return (
     <>
-      <PageHero layout="text" title={title} locale={locale} />
-      <div className="wrap pb-24 md:pb-32">
+      <PageHead tone="ivory" title={title} />
+      <div className="wrap pb-32 pt-4 md:pb-44">
         <Pending locale={locale} />
         {children}
         <p className="t-small border-t border-ink/10 pt-8 text-ink-soft">
-          {t.updated} : {new Date(legalConfig.lastUpdate).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-GB", { day: "numeric", month: "long", year: "numeric" })}
+          {t.updated} :{" "}
+          {new Date(legalConfig.lastUpdate).toLocaleDateString(locale === "fr" ? "fr-FR" : "en-GB", { day: "numeric", month: "long", year: "numeric" })}
         </p>
       </div>
     </>
@@ -57,25 +60,43 @@ export function LegalNoticePage({ locale }: { locale: Locale }) {
       <Section title={fr ? "Éditeur du site" : "Website publisher"}>
         <dl className="grid gap-x-6 gap-y-2 sm:grid-cols-[max-content_1fr]">
           <dt>{fr ? "Dénomination" : "Company name"}</dt>
-          <dd><V value={p.companyName} locale={locale} /></dd>
+          <dd>
+            <V value={p.companyName} locale={locale} />
+          </dd>
           <dt>{fr ? "Nom commercial" : "Trading name"}</dt>
           <dd>{siteConfig.name}</dd>
           <dt>{fr ? "Forme juridique et capital" : "Legal form and share capital"}</dt>
-          <dd><V value={p.legalForm && p.shareCapital ? `${p.legalForm}, ${p.shareCapital}` : p.legalForm} locale={locale} /></dd>
+          <dd>
+            <V value={p.legalForm && p.shareCapital ? `${p.legalForm}, ${p.shareCapital}` : p.legalForm} locale={locale} />
+          </dd>
           <dt>SIREN / SIRET</dt>
-          <dd><V value={p.siret ?? p.siren} locale={locale} /></dd>
+          <dd>
+            <V value={p.siret ?? p.siren} locale={locale} />
+          </dd>
           <dt>RCS</dt>
-          <dd><V value={p.rcs} locale={locale} /></dd>
+          <dd>
+            <V value={p.rcs} locale={locale} />
+          </dd>
           <dt>{fr ? "N° TVA intracommunautaire" : "EU VAT number"}</dt>
-          <dd><V value={p.vatNumber} locale={locale} /></dd>
+          <dd>
+            <V value={p.vatNumber} locale={locale} />
+          </dd>
           <dt>{fr ? "Siège social" : "Registered office"}</dt>
-          <dd><V value={p.registeredOffice} locale={locale} /></dd>
+          <dd>
+            <V value={p.registeredOffice} locale={locale} />
+          </dd>
           <dt>{fr ? "Établissement" : "Premises"}</dt>
           <dd>27 Rue des Gravilliers, 75003 Paris</dd>
           <dt>{fr ? "Directeur de la publication" : "Publication director"}</dt>
-          <dd><V value={p.publicationDirector} locale={locale} /></dd>
+          <dd>
+            <V value={p.publicationDirector} locale={locale} />
+          </dd>
           <dt>{fr ? "Contact" : "Contact"}</dt>
-          <dd><a href={`mailto:${p.email}`} className="link-draw">{p.email}</a></dd>
+          <dd>
+            <a href={`mailto:${p.email}`} className="link-draw">
+              {p.email}
+            </a>
+          </dd>
         </dl>
       </Section>
       <Section title={fr ? "Hébergement" : "Hosting"}>
@@ -85,7 +106,9 @@ export function LegalNoticePage({ locale }: { locale: Locale }) {
           {h.address}
           {h.toVerify ? <span className="t-small"> ({tv})</span> : null}
           <br />
-          <a href={h.website} target="_blank" rel="noopener noreferrer" className="link-draw">{h.website.replace("https://", "")}</a>
+          <a href={h.website} target="_blank" rel="noopener noreferrer" className="link-draw">
+            {h.website.replace("https://", "")}
+          </a>
         </p>
       </Section>
       <Section title={fr ? "Propriété intellectuelle" : "Intellectual property"}>
@@ -105,7 +128,9 @@ export function LegalNoticePage({ locale }: { locale: Locale }) {
           {fr
             ? "Le site propose des liens vers Instagram et Google Maps, qui s'ouvrent sur leurs propres sites. Le plan Google Maps intégré ne se charge qu'après votre accord."
             : "The site links to Instagram and Google Maps, which open on their own websites. The embedded Google Maps view only loads after you agree."}{" "}
-          <TextLink href={href("cookies", locale)}>{fr ? "Gérer mes choix" : "Manage my choices"}</TextLink>
+          <TLink href={href("cookies", locale)} className="link-draw font-semibold">
+            {fr ? "Gérer mes choix" : "Manage my choices"}
+          </TLink>
         </p>
       </Section>
       {siteConfig.credit ? (
@@ -125,7 +150,10 @@ export function PrivacyPage({ locale }: { locale: Locale }) {
       <Section title={fr ? "Responsable du traitement" : "Data controller"}>
         <p>
           <V value={p.companyName} locale={locale} /> ({siteConfig.name}), {fr ? "joignable à" : "reachable at"}{" "}
-          <a href={`mailto:${p.email}`} className="link-draw">{p.email}</a>.
+          <a href={`mailto:${p.email}`} className="link-draw">
+            {p.email}
+          </a>
+          .
         </p>
       </Section>
       <Section title={fr ? "Données collectées" : "Data collected"}>
@@ -177,12 +205,10 @@ export function CookiesPage({ locale }: { locale: Locale }) {
       <Section title={fr ? "Ce qui est stocké sur votre appareil" : "What is stored on your device"}>
         <ul className="list-disc space-y-2 pl-5">
           <li>
-            <strong>ml-intro</strong> (sessionStorage) :{" "}
-            {fr ? "évite de rejouer l'animation d'accueil pendant la visite. Effacé à la fermeture de l'onglet." : "avoids replaying the intro animation during your visit. Cleared when you close the tab."}
-          </li>
-          <li>
             <strong>ml-consent-maps</strong> (localStorage) :{" "}
-            {fr ? "mémorise votre accord pour afficher le plan Google Maps. Présent uniquement si vous l'avez donné." : "remembers that you agreed to display the Google Maps view. Only present if you gave it."}
+            {fr
+              ? "mémorise votre accord pour afficher le plan Google Maps. Présent uniquement si vous l'avez donné."
+              : "remembers that you agreed to display the Google Maps view. Only present if you gave it."}
           </li>
         </ul>
       </Section>

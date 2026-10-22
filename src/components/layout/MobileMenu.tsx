@@ -1,44 +1,47 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { TLink } from "@/components/motion/TransitionProvider";
-import { useMotion } from "@/components/motion/MotionProvider";
+import { useEffect, useRef, type CSSProperties } from "react";
+import { ArrowUpRight } from "lucide-react";
+import { TLink } from "@/components/motion/PageTransition";
 import { href, type Locale, type NavKey } from "@/i18n/config";
 import { getDictionary } from "@/i18n";
 import { siteConfig, fullAddress } from "@/data/site-config";
+import { pageTone, tones } from "@/lib/tones";
 import { LangSwitch } from "./LangSwitch";
 import { OpenStatus } from "@/components/ui/OpenStatus";
 
 const ITEMS: NavKey[] = ["home", "menu", "favorites", "cafe", "story", "visit"];
 
 /**
- * Menu mobile plein écran : il s'ouvre comme une lune qui grandit depuis le bouton.
- * Le reste de la page devient `inert` (focus et lecteurs d'écran restent dans le menu).
+ * Menu mobile plein écran, fond lavande : il s'ouvre en cercle depuis le bouton.
+ * Pendant l'ouverture, le reste de la page est `inert` (focus et lecteurs d'écran restent dans
+ * le menu et l'en-tête), le défilement est bloqué, Échap ferme et rend le focus au bouton.
  */
 export function MobileMenu({ open, onClose, locale }: { open: boolean; onClose: () => void; locale: Locale }) {
   const t = getDictionary(locale);
   const ref = useRef<HTMLDivElement>(null);
-  const { lenis } = useMotion();
 
   useEffect(() => {
-    const targets = [document.querySelector("main"), document.querySelector("[data-site-footer]")];
-    if (open) {
-      targets.forEach((el) => el?.setAttribute("inert", ""));
-      lenis()?.stop();
-      document.documentElement.style.overflow = "hidden";
-      const first = ref.current?.querySelector<HTMLElement>("a");
-      setTimeout(() => first?.focus(), 250);
-    } else {
-      targets.forEach((el) => el?.removeAttribute("inert"));
-      lenis()?.start();
-      document.documentElement.style.overflow = "";
-    }
+    const targets = [document.getElementById("main"), document.querySelector("[data-site-footer]")];
+    if (!open) return;
+    targets.forEach((el) => el?.setAttribute("inert", ""));
+    document.documentElement.style.overflow = "hidden";
+    const first = setTimeout(() => ref.current?.querySelector<HTMLElement>("a")?.focus(), 120);
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && open) onClose();
+      if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose, lenis]);
+    const mq = window.matchMedia("(min-width: 64rem)");
+    const onWide = () => mq.matches && onClose();
+    mq.addEventListener("change", onWide);
+    return () => {
+      clearTimeout(first);
+      targets.forEach((el) => el?.removeAttribute("inert"));
+      document.documentElement.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+      mq.removeEventListener("change", onWide);
+    };
+  }, [open, onClose]);
 
   return (
     <div
@@ -49,42 +52,40 @@ export function MobileMenu({ open, onClose, locale }: { open: boolean; onClose: 
       aria-label={t.a11y.mainNav}
       aria-hidden={!open}
       inert={!open}
-      className="on-dark fixed inset-0 z-40 flex flex-col overflow-y-auto bg-matcha-night text-paper transition-[clip-path] duration-[900ms] ease-[var(--ease-ink)] lg:hidden"
-      style={{ clipPath: open ? "circle(150% at calc(100% - 2.6rem) 2.2rem)" : "circle(0% at calc(100% - 2.6rem) 2.2rem)" }}
+      data-open={open}
+      className="mm fixed inset-0 z-40 flex flex-col overflow-y-auto overscroll-contain bg-lavender text-ink lg:hidden"
     >
-      <nav aria-label={t.a11y.mainNav} className="wrap flex flex-1 flex-col justify-center pb-8 pt-28">
-        <ul className="space-y-1">
+      <nav aria-label={t.a11y.mainNav} className="wrap flex flex-1 flex-col justify-center pb-6 pt-[calc(var(--header-h)+1.25rem)]">
+        <ol>
           {ITEMS.map((key, i) => (
-            <li key={key} className="overflow-hidden">
-              <TLink
-                href={href(key, locale)}
-                onClick={onClose}
-                className="group flex items-baseline gap-4 py-1.5 font-[family-name:var(--font-display)] text-[clamp(2.3rem,10vw,3.6rem)] leading-[1.08] tracking-[-0.02em] transition-transform duration-700 ease-[var(--ease-moon)]"
-                style={{
-                  transform: open ? "translateY(0)" : "translateY(110%)",
-                  transitionDelay: open ? `${180 + i * 60}ms` : "0ms",
-                }}
-              >
-                <span className="transition-colors group-hover:text-moon">{t.nav[key]}</span>
+            <li key={key} className="mm-item border-b border-ink/12 last:border-b-0" style={{ "--i": i } as CSSProperties}>
+              <TLink href={href(key, locale)} onClick={onClose} className="group flex items-center gap-4 py-2.5">
+                <span className="t-small w-6 font-semibold tabular-nums text-ink">{String(i + 1).padStart(2, "0")}</span>
+                <span className="font-[family-name:var(--font-display)] text-[clamp(2.2rem,10.5vw,4rem)] font-bold leading-[1] tracking-[-0.035em] transition-transform duration-500 ease-[var(--ease-out)] group-hover:translate-x-1.5">
+                  {t.nav[key]}
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="dot ml-auto h-4 w-4 scale-75 transition-transform duration-500 group-hover:scale-110"
+                  style={{ "--dot": tones[pageTone[key]].deep } as CSSProperties}
+                />
               </TLink>
             </li>
           ))}
-        </ul>
+        </ol>
       </nav>
-      <div
-        className="wrap grid gap-6 border-t border-paper/15 pb-10 pt-6 text-[0.9375rem] transition-opacity duration-700"
-        style={{ opacity: open ? 1 : 0, transitionDelay: open ? "550ms" : "0ms" }}
-      >
+      <div className="mm-foot wrap grid gap-5 border-t border-ink/15 pb-10 pt-6 text-[0.95rem]">
         <div>
-          <p className="t-label">{t.common.address}</p>
-          <p>{fullAddress}</p>
-          <OpenStatus locale={locale} className="mt-1 text-paper/80" />
+          <p className="t-eyebrow text-ink">{t.common.address}</p>
+          <p className="mt-1 font-medium">{fullAddress}</p>
+          <OpenStatus locale={locale} className="mt-1 text-ink/80" />
         </div>
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <a href={siteConfig.instagram.url} target="_blank" rel="noopener noreferrer" className="link-draw">
-            Instagram <span className="sr-only">{t.a11y.newTab}</span>
+          <a href={siteConfig.instagram.url} target="_blank" rel="noopener noreferrer" className="chip min-h-11 gap-1.5">
+            Instagram <ArrowUpRight className="h-4 w-4" strokeWidth={1.8} aria-hidden="true" />
+            <span className="sr-only">{t.a11y.newTab}</span>
           </a>
-          <LangSwitch locale={locale} long />
+          <LangSwitch locale={locale} long className="chip min-h-11" />
         </div>
       </div>
     </div>

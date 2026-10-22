@@ -13,13 +13,12 @@ export function LangSwitch({ locale, className = "", long = false }: { locale: L
   const t = getDictionary(locale);
   const other: Locale = locale === "fr" ? "en" : "fr";
   const key = routeKeyFromPath(pathname) ?? "home";
-  const target = routes[key][other];
   return (
     <a
-      href={target}
+      href={routes[key][other]}
       hrefLang={other}
       lang={other}
-      className={`link-draw t-small inline-flex min-h-11 items-center ${className}`}
+      className={`font-semibold ${className}`}
       aria-label={`${t.a11y.language} : ${t.common.switchTo}`}
     >
       {long ? t.common.switchTo : t.common.switchToShort}

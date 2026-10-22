@@ -21,10 +21,10 @@ export function CopyButton({ text, label, done, className = "" }: { text: string
     setTimeout(() => setCopied(false), 2200);
   };
   return (
-    <button type="button" onClick={copy} className={`group inline-flex min-h-11 items-center gap-2 ${className}`}>
+    <button type="button" onClick={copy} className={`group inline-flex min-h-11 items-center gap-2 font-medium ${className}`}>
       <span className="relative h-4 w-4" aria-hidden="true">
-        <Copy className={`absolute inset-0 h-4 w-4 transition-all duration-300 ${copied ? "scale-50 opacity-0" : ""}`} strokeWidth={1.5} />
-        <Check className={`absolute inset-0 h-4 w-4 transition-all duration-300 ${copied ? "" : "scale-50 opacity-0"}`} strokeWidth={1.8} />
+        <Copy className={`absolute inset-0 h-4 w-4 transition-all duration-300 ${copied ? "scale-50 opacity-0" : ""}`} strokeWidth={1.8} />
+        <Check className={`absolute inset-0 h-4 w-4 transition-all duration-300 ${copied ? "" : "scale-50 opacity-0"}`} strokeWidth={2} />
       </span>
       <span className="link-draw" aria-live="polite">
         {copied ? done : label}
