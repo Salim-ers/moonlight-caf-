@@ -1,0 +1,544 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/*  Moonlight Café — design tokens                                     */
+/* ------------------------------------------------------------------ */
+@theme {
+  --color-paper: #faf8f3;
+  --color-cream: #f1ede5;
+  --color-chalk: #fffdf9;
+  --color-stone: #dcd3c5;
+  --color-stone-deep: #c9bead;
+  --color-ink: #23231f;
+  --color-ink-soft: #57574e;
+  --color-matcha: #718452;
+  --color-matcha-deep: #425637;
+  --color-matcha-night: #2f3d27;
+  --color-matcha-mist: #dfe4d3;
+  --color-wood: #a77b58;
+  --color-moon: #dcdce8;
+  --color-moon-deep: #c5c5d8;
+
+  --font-display: var(--font-mincho), "Hiragino Mincho ProN", "Yu Mincho", "Times New Roman", serif;
+  --font-sans: var(--font-gothic), "Hiragino Sans", "Helvetica Neue", Arial, sans-serif;
+
+  --ease-moon: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-ink: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --breakpoint-xs: 24rem;
+  --breakpoint-3xl: 112rem;
+}
+
+:root {
+  --gutter: clamp(1rem, 4vw, 3.5rem);
+  --header-h: 4.5rem;
+  color-scheme: light;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Base                                                               */
+/* ------------------------------------------------------------------ */
+@layer base {
+  html {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--color-paper);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    font-feature-settings: "palt" 0;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+  ::selection {
+    background: var(--color-matcha-deep);
+    color: var(--color-paper);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-matcha-deep);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  .on-dark :focus-visible,
+  .on-dark:focus-visible {
+    outline-color: var(--color-moon);
+  }
+  img {
+    user-select: none;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Typographic scale (Bringhurst-ish, ratio ≈ 1.333 → display)         */
+/* ------------------------------------------------------------------ */
+@layer components {
+  .t-display {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(2.9rem, 9.2vw, 10.5rem);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+  }
+  .t-h1 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(2.6rem, 7vw, 7.5rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .t-h2 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(2.1rem, 4.6vw, 4.9rem);
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+  }
+  .t-h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.45rem, 2.2vw, 2.1rem);
+    line-height: 1.18;
+    letter-spacing: -0.01em;
+  }
+  .t-lede {
+    font-size: clamp(1.1rem, 1.35vw, 1.3rem);
+    line-height: 1.65;
+  }
+  .t-small {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+  }
+  .t-label {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+    color: var(--color-ink-soft);
+  }
+  .on-dark .t-label {
+    color: color-mix(in oklab, var(--color-paper) 70%, transparent);
+  }
+  .measure {
+    max-width: 34rem;
+  }
+  .wrap {
+    width: 100%;
+    max-width: 120rem;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /* Masked lines for headline reveals */
+  .line-mask {
+    display: block;
+    overflow: clip;
+    overflow-clip-margin: 0.12em;
+    padding-bottom: 0.06em;
+    margin-bottom: -0.06em;
+  }
+  .line-inner {
+    display: block;
+    will-change: transform;
+  }
+
+  /* Underline that draws itself on hover */
+  .link-draw {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-position: 100% 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.6s var(--ease-moon);
+    padding-bottom: 2px;
+  }
+  .link-draw:hover,
+  .link-draw:focus-visible,
+  .link-draw[aria-current="page"] {
+    background-size: 100% 1px;
+    background-position: 0% 100%;
+  }
+
+  /* Grain — subtle paper texture on photos sections */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("/textures/grain.png");
+    background-size: 180px;
+    opacity: 0.05;
+    mix-blend-mode: multiply;
+  }
+
+  /* Leader dots for the menu */
+  .leader {
+    flex: 1;
+    min-width: 1.5rem;
+    border-bottom: 1px dotted color-mix(in oklab, var(--color-ink) 35%, transparent);
+    transform: translateY(-0.35em);
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Motion gating: hide scroll-revealed elements only when JS + motion   */
+/* ------------------------------------------------------------------ */
+html.motion [data-anim="lines"] .line-inner {
+  transform: translateY(105%);
+}
+html.motion [data-anim="fade"] {
+  opacity: 0;
+}
+html.motion [data-anim="clip"] {
+  clip-path: inset(100% 0 0 0);
+}
+html.motion [data-anim="clip"][data-from="top"] {
+  clip-path: inset(0 0 100% 0);
+}
+html.motion [data-anim="clip"][data-from="left"] {
+  clip-path: inset(0 100% 0 0);
+}
+html.motion [data-anim="clip"][data-from="right"] {
+  clip-path: inset(0 0 0 100%);
+}
+html.motion .enter-zoom {
+  transform: scale(1.08);
+}
+html.motion-failsafe [data-anim="lines"] .line-inner,
+html.motion-failsafe [data-anim="fade"],
+html.motion-failsafe [data-anim="clip"] {
+  transform: none !important;
+  opacity: 1 !important;
+  clip-path: none !important;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Entrances on page load — pure CSS, start at first paint            */
+/*  (no wait for React hydration → fast LCP). Paused during a page      */
+/*  transition so they play when the new page is revealed.             */
+/* ------------------------------------------------------------------ */
+@keyframes ml-line {
+  from {
+    transform: translateY(105%);
+  }
+}
+@keyframes ml-fade {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+@keyframes ml-appear {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes ml-clip {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes ml-zoom {
+  from {
+    transform: scale(1.25);
+  }
+}
+@keyframes ml-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes ml-moonrise {
+  from {
+    --k: 0;
+  }
+  to {
+    --k: 1;
+  }
+}
+@keyframes ml-photo {
+  from {
+    transform: scale(1.3);
+  }
+}
+:root {
+  --expo-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --expo-inout: cubic-bezier(0.87, 0, 0.13, 1);
+  --p3-out: cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+html.motion .enter-lines .line-inner {
+  animation: ml-line 1.25s var(--expo-out) backwards;
+  animation-delay: calc(var(--enter-delay, 0s) + 0.1s + var(--i, 0) * var(--stagger, 0.09s));
+}
+html.motion .enter-fade {
+  animation: ml-fade 1.1s var(--p3-out) backwards;
+  animation-delay: calc(var(--enter-delay, 0s) + 0.1s);
+}
+html.motion .enter-clip {
+  animation: ml-clip 1.5s var(--expo-inout) backwards;
+  animation-delay: calc(var(--enter-delay, 0s) + 0.1s);
+}
+html.motion .enter-clip .enter-zoom {
+  animation: ml-zoom 1.9s var(--expo-out) backwards;
+  animation-delay: calc(var(--enter-delay, 0s) + 0.1s);
+}
+html.navigating main *,
+html.navigating main {
+  animation-play-state: paused !important;
+}
+
+/* Hero: moonrise, photo, ring, title, details */
+.hero-moon {
+  --hd: 0.15s;
+}
+html.intro-run .hero-moon {
+  --hd: 1.5s;
+}
+html.motion .hero-moon {
+  animation: ml-moonrise 1.7s var(--expo-inout) backwards;
+  animation-delay: var(--hd);
+}
+html.motion .hero-moon [data-photo] {
+  animation: ml-photo 2.3s var(--expo-out) backwards;
+  animation-delay: calc(var(--hd) + 0.15s);
+}
+html.motion .hero-moon [data-ring] circle {
+  animation: ml-draw 2s cubic-bezier(0.65, 0, 0.35, 1) backwards;
+  animation-delay: calc(var(--hd) + 0.35s);
+}
+html.motion .hero-moon [data-hero-title] .line-inner {
+  animation: ml-line 1.3s var(--expo-out) backwards;
+  animation-delay: calc(var(--hd) + 0.45s + var(--i, 0) * 0.1s);
+}
+html.motion .hero-moon [data-kanji] svg {
+  animation: ml-appear 0.9s ease-out backwards;
+  animation-delay: calc(var(--hd) + 1s + var(--i, 0) * 0.12s);
+}
+html.motion .hero-moon [data-hero-fade] {
+  animation: ml-fade 1s var(--p3-out) backwards;
+  animation-delay: calc(var(--hd) + 1s + var(--i, 0) * 0.08s);
+}
+
+/* Intro overlay is only displayed when the head script decided to play it */
+.intro-overlay {
+  display: none;
+}
+html.intro .intro-overlay {
+  display: flex;
+}
+@keyframes ml-ink {
+  from {
+    --ink: 0%;
+  }
+  to {
+    --ink: 135%;
+  }
+}
+@keyframes ml-logo-out {
+  to {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+}
+@keyframes ml-veil {
+  to {
+    clip-path: inset(0 0 100% 0);
+  }
+}
+@keyframes ml-out {
+  to {
+    opacity: 0;
+  }
+}
+html.intro [data-intro-logo] {
+  animation:
+    ml-ink 1.15s cubic-bezier(0.65, 0, 0.35, 1) 0.1s both,
+    ml-logo-out 0.55s ease-in 1.35s forwards;
+}
+html.intro [data-intro-veil] {
+  animation: ml-veil 0.9s var(--expo-inout) 1.45s forwards;
+}
+html.intro.intro-skip .intro-overlay {
+  animation: ml-out 0.3s ease forwards;
+}
+html.intro body {
+  overflow: hidden;
+}
+
+/* Hero moon geometry (registered so GSAP can read/animate resolved values) */
+@property --k {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+@property --grow {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+@property --r {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+@property --cx {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+@property --cy {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+.hero-moon {
+  --r: min(38vw, 20svh);
+  --cx: 50vw;
+  --cy: calc(var(--header-h) + 1.5svh + var(--r));
+}
+@media (min-width: 64rem) {
+  .hero-moon {
+    --r: min(21.5vw, 36svh);
+    --cx: calc(100vw - var(--gutter) - var(--r) - 1vw);
+    --cy: 52svh;
+  }
+}
+@property --dy {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+.hero-moon [data-moon] {
+  clip-path: circle(calc(var(--r) * var(--k) * var(--grow)) at var(--cx) calc(var(--cy) + var(--dy)));
+}
+.hero-moon [data-ring] {
+  position: absolute;
+  left: calc(var(--cx) - var(--r) * var(--k) - 1.25rem);
+  top: calc(var(--cy) - var(--r) * var(--k) - 1.25rem);
+  width: calc(2 * var(--r) * var(--k) + 2.5rem);
+  height: calc(2 * var(--r) * var(--k) + 2.5rem);
+}
+.hero-moon [data-kanji] {
+  position: absolute;
+  left: calc(var(--cx) - var(--r) - 3.75rem);
+  top: calc(var(--cy) - var(--r) + 0.5rem);
+}
+
+/* Ink reveal used on the original logo (mask only, the PNG is untouched) */
+@property --ink {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 135%;
+}
+.ink-mask {
+  -webkit-mask-image: linear-gradient(172deg, #000 calc(var(--ink) - 28%), transparent var(--ink));
+  mask-image: linear-gradient(172deg, #000 calc(var(--ink) - 28%), transparent var(--ink));
+}
+
+@keyframes scrollcue {
+  0% {
+    transform: translateY(-100%);
+  }
+  60%,
+  100% {
+    transform: translateY(200%);
+  }
+}
+
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Print — the menu page prints as a clean single-column card         */
+/* ------------------------------------------------------------------ */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    font-size: 11pt;
+  }
+  .no-print,
+  header[data-site-header],
+  footer[data-site-footer],
+  [data-transition-overlay],
+  .intro-overlay {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  [data-menu-category] {
+    display: block !important;
+    break-inside: avoid;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  [data-anim] {
+    opacity: 1 !important;
+    clip-path: none !important;
+  }
+  .line-inner {
+    transform: none !important;
+  }
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+}
+.print-only {
+  display: none;
+}
