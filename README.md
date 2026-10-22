@@ -49,7 +49,7 @@ public/og/               Image de partage Open Graph (logo complet, sans photo)
 scripts/
   check-photos.mjs       Audit des photos (doublons d'usage, empreintes MD5, hachage perceptuel)
   generate-brand-assets.mjs  Régénère logo web, icônes, favicon et image OG depuis le logo original
-  qa.mjs                 Recette fonctionnelle Playwright (38 contrôles)
+  qa.mjs                 Recette fonctionnelle Playwright (39 contrôles)
 src/
   app/                   Routes (fr) sans préfixe, (en) sous /en, sitemap, robots, manifest, icônes
   assets/photos/         Les 26 photos (Next.js génère AVIF/WebP et tailles responsive)
@@ -115,7 +115,8 @@ Le fichier original (`assets/originals/logo-moonlight-cafe-original.png`, identi
 
 ## 7. Animations
 
-- **Entrées au chargement** (hero, en-têtes) : CSS pur, visibles dès le premier affichage, ≤ 0,9 s. Aucune introduction bloquante.
+- **Ouverture du site** : le logo complet apparaît ≈ 0,8 s puis le voile se lève (CSS pur, une fois par visite via `sessionStorage`, n'intercepte pas les clics, désactivé avec « réduire les animations »).
+- **Entrées au chargement** (hero, en-têtes) : CSS pur, ≤ 0,9 s, synchronisées avec la levée du voile.
 - **Révélations au défilement** : attribut `data-reveal` (rideaux, cercle, fenêtre, lignes de titre…), déclenchées par IntersectionObserver.
 - **Séquences liées au défilement** : attribut `data-progress` → variable CSS `--p` (scène matcha épinglée, fenêtre sur la salle, mots révélés, table qui tourne…). Un seul écouteur de défilement passif.
 - **Souris** (ordinateur uniquement) : parallaxe du hero (`data-pointer`), boutons magnétiques (`data-magnetic`), curseur « Glisser » sur le rail des signatures.

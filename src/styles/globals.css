@@ -397,7 +397,7 @@
 }
 @keyframes enter-zoom {
   from {
-    transform: scale(1.22);
+    transform: scale(1.06);
   }
 }
 @keyframes enter-rise {
@@ -420,36 +420,36 @@
 /* Entrées au chargement : CSS pur, elles démarrent au premier affichage (pas d'attente de React) */
 html.js-motion .enter-up {
   animation: enter-up 0.75s var(--ease-out) backwards;
-  animation-delay: var(--d, 0s);
+  animation-delay: calc(var(--d, 0s) + var(--boot, 0s));
 }
 html.js-motion .enter-lines .ln > span {
   animation: enter-line 0.8s var(--ease-out) backwards;
-  animation-delay: calc(var(--d, 0s) + var(--i, 0) * 70ms);
+  animation-delay: calc(var(--d, 0s) + var(--boot, 0s) + var(--i, 0) * 70ms);
 }
 html.js-motion .enter-clip {
   animation: enter-clip 0.9s var(--ease-in-out) backwards;
-  animation-delay: var(--d, 0s);
+  animation-delay: calc(var(--d, 0s) + var(--boot, 0s));
 }
 html.js-motion .enter-clip .zoom {
   animation: enter-zoom 1.3s var(--ease-out) backwards;
-  animation-delay: var(--d, 0s);
+  animation-delay: calc(var(--d, 0s) + var(--boot, 0s));
 }
 /* Image principale (LCP) : jamais masquée, elle monte et se pose — peinte dès la première image */
 html.js-motion .enter-rise {
   animation: enter-rise 0.9s var(--ease-out) backwards;
-  animation-delay: var(--d, 0s);
+  animation-delay: calc(var(--d, 0s) + var(--boot, 0s));
 }
 html.js-motion .enter-rise .zoom {
   animation: enter-zoom 1.3s var(--ease-out) backwards;
-  animation-delay: var(--d, 0s);
+  animation-delay: calc(var(--d, 0s) + var(--boot, 0s));
 }
 html.js-motion .enter-pop {
   animation: enter-pop 0.7s var(--ease-spring) backwards;
-  animation-delay: var(--d, 0s);
+  animation-delay: calc(var(--d, 0s) + var(--boot, 0s));
 }
 html.js-motion .enter-fade {
   animation: enter-fade 0.6s ease backwards;
-  animation-delay: var(--d, 0s);
+  animation-delay: calc(var(--d, 0s) + var(--boot, 0s));
 }
 /* Pendant une transition de page, les entrées attendent que la page soit dévoilée */
 html.is-navigating main [class*="enter-"],
@@ -528,7 +528,7 @@ html.js-motion [data-reveal] .zoom {
   transition-delay: var(--d, 0s);
 }
 html.js-motion [data-reveal]:not(.is-in) .zoom {
-  transform: scale(1.2);
+  transform: scale(1.06);
 }
 
 /* Garde-fou : si le moteur d'animation ne démarre pas, tout s'affiche */
@@ -601,6 +601,46 @@ html.motion-failsafe [class*="enter-"] {
 .pt[data-state="reveal"] .pt-logo {
   opacity: 0;
   transform: scale(1.035) translateY(-8px);
+}
+
+/* Ouverture du site : le logo complet apparaît une fois par visite, puis le voile se lève.
+   CSS pur (démarre au premier affichage), ne bloque ni le défilement ni les clics. */
+html.boot {
+  --boot: 0.75s;
+}
+html.boot .pt {
+  --pt-bg: var(--color-ivory);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: none;
+  transition: none;
+  animation: boot-out 0.5s var(--ease-in-out) 0.8s forwards;
+}
+html.boot .pt-logo {
+  opacity: 1;
+  transform: none;
+  transition: none;
+  animation:
+    boot-logo-in 0.55s var(--ease-out) backwards,
+    boot-logo-out 0.45s var(--ease-in-out) 0.8s forwards;
+}
+@keyframes boot-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+@keyframes boot-logo-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(8px);
+  }
+}
+@keyframes boot-logo-out {
+  to {
+    opacity: 0;
+    transform: scale(1.03) translateY(-8px);
+  }
 }
 
 /* ================================================================== */
@@ -709,35 +749,6 @@ html.motion-failsafe [class*="enter-"] {
   background: var(--color-lavender);
   box-shadow: 0 24px 50px -24px rgb(39 36 32 / 0.5);
 }
-.hero-layer--badge {
-  --sy: -110;
-  top: 2%;
-  left: 2%;
-  width: clamp(5.25rem, 22vw, 8.75rem);
-  aspect-ratio: 1;
-}
-.hero-badge {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: var(--color-butter);
-  color: var(--color-ink);
-}
-.hero-layer--spark {
-  --sy: -160;
-  right: 6%;
-  top: 46%;
-  width: 1.6rem;
-  aspect-ratio: 1;
-  z-index: 3;
-}
-.hero-spark {
-  width: 100%;
-  height: 100%;
-}
 .hero-layer--blob {
   --sy: 90;
   --rot: 18;
@@ -765,34 +776,6 @@ html.motion-failsafe [class*="enter-"] {
   height: 100%;
   border-radius: 50%;
   background: var(--color-lavender);
-}
-.hero-tag {
-  position: absolute;
-  z-index: 4;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.85rem;
-  border-radius: 999px;
-  background: var(--color-ivory);
-  font-size: 0.8rem;
-  font-weight: 600;
-  line-height: 1.2;
-  white-space: nowrap;
-  box-shadow: 0 10px 30px -14px rgb(39 36 32 / 0.45);
-}
-.hero-tag--1 {
-  right: 6%;
-  bottom: -0.9rem;
-}
-.hero-tag--2 {
-  display: none;
-}
-.hero-palette {
-  display: none;
-}
-.hero-scroll {
-  display: none;
 }
 
 @media (min-width: 40rem) {
@@ -851,22 +834,13 @@ html.motion-failsafe [class*="enter-"] {
     top: 0.5rem;
     right: 4%;
     height: auto;
-    width: min(88%, calc((100svh - var(--header-h) - 7.5rem) * 0.74));
+    /* plafonné pour ne jamais agrandir la photo au-delà de sa définition (941 px de haut) */
+    width: min(88%, calc((100svh - var(--header-h) - 7.5rem) * 0.74), 33rem);
   }
   .hero-layer--medal {
     left: -14%;
     bottom: 13%;
     width: clamp(9rem, 14vw, 15.5rem);
-  }
-  .hero-layer--badge {
-    top: 3%;
-    left: -4%;
-    width: clamp(6.5rem, 8.6vw, 9.5rem);
-  }
-  .hero-layer--spark {
-    right: -1%;
-    top: 58%;
-    width: 2rem;
   }
   .hero-layer--blob {
     right: -7vw;
@@ -879,65 +853,10 @@ html.motion-failsafe [class*="enter-"] {
     bottom: 3rem;
     width: 11rem;
   }
-  .hero-tag--1 {
-    right: -9%;
-    bottom: 16%;
-  }
-  .hero-tag--2 {
-    display: inline-flex;
-    left: 62%;
-    top: -16%;
-  }
-  .hero-palette {
-    display: block;
-    position: absolute;
-    z-index: 3;
-    right: var(--gutter);
-    bottom: 0;
-    max-width: 21rem;
-    text-align: right;
-  }
-  .hero-palette ul {
-    justify-content: flex-end;
-  }
-  .hero-scroll {
-    position: absolute;
-    left: 50%;
-    bottom: 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    color: var(--color-ink-soft);
-    transform: translateX(-50%);
-  }
 }
 @media (min-width: 64rem) and (max-height: 760px) {
   .hero-title {
     font-size: clamp(4.5rem, 8vw, 8rem);
-  }
-}
-.hero-scroll-line {
-  position: relative;
-  display: block;
-  width: 2.5rem;
-  height: 1.5px;
-  overflow: hidden;
-  background: color-mix(in oklab, var(--color-ink) 18%, transparent);
-}
-.hero-scroll-line::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--color-ink);
-  animation: scrollcue 2.2s var(--ease-in-out) infinite;
-}
-@keyframes scrollcue {
-  0% {
-    transform: translateX(-100%);
-  }
-  60%,
-  100% {
-    transform: translateX(100%);
   }
 }
 
@@ -1138,7 +1057,8 @@ html.js-motion .words > span {
   }
   .matcha-visual {
     grid-column: 7 / 13;
-    max-width: min(100%, 72svh);
+    /* plafonné : la photo n'est jamais agrandie au-delà de sa définition */
+    max-width: min(100%, 62svh, 36rem);
   }
   html.js-motion .matcha-track {
     height: 230vh;
@@ -1154,7 +1074,7 @@ html.js-motion .words > span {
     clip-path: circle(calc(24% + var(--p) * 48%) at 50% 50%);
   }
   html.js-motion .matcha-iris-img {
-    transform: scale(calc(1.32 - var(--p) * 0.32));
+    transform: scale(calc(1.06 - var(--p) * 0.06));
   }
   html.js-motion .matcha-top {
     transform: translate3d(0, calc((1 - var(--p)) * 90px), 0) rotate(calc(var(--p) * 100deg - 50deg));
@@ -1207,19 +1127,6 @@ html.js-motion .words > span {
   transition: transform 1.1s var(--ease-in-out);
   will-change: transform;
 }
-.cc-pin {
-  position: absolute;
-  left: 1rem;
-  bottom: 1rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.9rem;
-  border-radius: 999px;
-  background: var(--color-ivory);
-  font-size: 0.85rem;
-  font-weight: 600;
-}
 
 /* ------------------------------------------------------------------ */
 /*  Scène 06 — The sweet side                                          */
@@ -1243,7 +1150,7 @@ html.js-motion .words > span {
 }
 .sweet-photo {
   position: relative;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1;
   overflow: hidden;
   border-radius: 1.75rem;
   background: var(--color-caramel);
@@ -1255,31 +1162,11 @@ html.js-motion .words > span {
 }
 @media (min-width: 64rem) {
   .sweet-photo {
-    aspect-ratio: 5 / 6;
+    aspect-ratio: 4 / 3;
   }
 }
 .sweet-zoom {
-  transform: scale(calc(1.16 - var(--p, 0.5) * 0.16));
-}
-.sweet-sticker {
-  position: absolute;
-  right: -0.75rem;
-  top: -2.25rem;
-  display: grid;
-  place-items: center;
-  width: 8rem;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: var(--color-pink);
-  transform: rotate(-10deg);
-}
-@media (min-width: 64rem) {
-  .sweet-sticker {
-    right: auto;
-    left: -3.5rem;
-    top: 3rem;
-    width: 9.5rem;
-  }
+  transform: scale(calc(1.05 - var(--p, 0.5) * 0.05));
 }
 
 /* ------------------------------------------------------------------ */
@@ -1296,7 +1183,7 @@ html.js-motion .words > span {
   --clip-r: 1.75rem;
   position: relative;
   margin-inline: var(--gutter);
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: 1.75rem;
   background: var(--color-butter);
@@ -1320,6 +1207,9 @@ html.js-motion .words > span {
     padding: 0;
   }
   html.js-motion .feel-stage {
+    /* fenêtre finale plafonnée à la définition de la photo (pas d'agrandissement flou) */
+    --fw: min(100vw - 2 * var(--gutter), 76rem);
+    --fh: min(100svh - 5rem, 43rem);
     position: sticky;
     top: 0;
     display: block;
@@ -1328,17 +1218,17 @@ html.js-motion .words > span {
   }
   html.js-motion .feel-window {
     position: absolute;
-    inset: 0;
+    left: calc(50% - var(--fw) / 2);
+    top: calc(50% - var(--fh) / 2);
+    width: var(--fw);
+    height: var(--fh);
     margin: 0;
     aspect-ratio: auto;
     border-radius: 0;
     clip-path: inset(
-      calc((1 - var(--e)) * 17%) calc((1 - var(--e)) * 31%) calc((1 - var(--e)) * 17%) calc((1 - var(--e)) * 31%) round calc((1 - var(--e)) * 30vw)
+      calc((1 - var(--e)) * 14%) calc((1 - var(--e)) * 28%) calc((1 - var(--e)) * 14%) calc((1 - var(--e)) * 28%) round calc((1 - var(--e)) * 22vw + 1.75rem)
     ) !important;
     transition: none !important;
-  }
-  html.js-motion .feel-img {
-    transform: scale(calc(1.22 - var(--e) * 0.22));
   }
   html.js-motion .feel-scrim {
     display: block;
@@ -1353,7 +1243,12 @@ html.js-motion .words > span {
   }
   html.js-motion .feel-copy {
     position: absolute;
-    inset: auto 0 7svh;
+    left: calc(50% - var(--fw) / 2 + 2.75rem);
+    bottom: calc(50% - var(--fh) / 2 + 2.5rem);
+    width: calc(var(--fw) - 5.5rem);
+    max-width: none;
+    margin: 0;
+    padding: 0;
     color: var(--color-ivory);
     opacity: clamp(0, (var(--p) - 0.42) * 4, 1);
     transform: translate3d(0, calc((1 - clamp(0, (var(--p) - 0.42) * 4, 1)) * 40px), 0);
@@ -1460,25 +1355,25 @@ html.js-motion .words > span {
   padding: 5rem 0;
   background: var(--tone-soft);
 }
-.fav-num {
-  position: absolute;
-  right: -0.06em;
-  top: -0.14em;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: clamp(9rem, 34vw, 27rem);
-  line-height: 0.8;
-  letter-spacing: -0.06em;
-  color: transparent;
-  -webkit-text-stroke: 2px var(--tone);
-  pointer-events: none;
-  user-select: none;
-}
 .fav-grid {
   position: relative;
   display: grid;
   gap: 2.5rem;
   align-items: center;
+}
+.fav-photo {
+  width: 100%;
+  max-width: 36rem;
+  margin-inline: auto;
+}
+.fav--wide .fav-photo {
+  max-width: 52rem;
+}
+.fav--circle .fav-photo {
+  max-width: 34rem;
+}
+.fav--full .fav-photo {
+  max-width: 80rem;
 }
 .fav-frame {
   position: relative;

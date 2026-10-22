@@ -35,7 +35,7 @@ export function MenuPage({ locale }: { locale: Locale }) {
           <div data-progress="out" className="menu-hero">
             <div className="menu-hero-disc enter-rise" style={{ "--d": "0.1s" } as CSSProperties}>
               <div className="menu-hero-spin">
-                <Photo id="p13" locale={locale} preload quality={72} sizes="(min-width: 1024px) 50vw, 130vw" />
+                <Photo id="p13" locale={locale} preload quality={85} sizes="(min-width: 1024px) 50vw, 130vw" />
               </div>
             </div>
           </div>
@@ -53,7 +53,7 @@ export function MenuPage({ locale }: { locale: Locale }) {
         </div>
 
         <div className="-mt-[4.25rem]">
-          {menu.map((cat, ci) => (
+          {menu.map((cat) => (
             <section
               key={cat.id}
               id={cat.id}
@@ -64,9 +64,7 @@ export function MenuPage({ locale }: { locale: Locale }) {
             >
               <div className="wrap grid gap-8 pb-16 pt-28 md:grid-cols-12 md:gap-8 md:pb-24 md:pt-32">
                 <div className="md:col-span-4">
-                  <p className="t-eyebrow tabular-nums text-[var(--tone-deep)]">
-                    {String(ci + 1).padStart(2, "0")} — {fill(m.items, { n: cat.items.length })}
-                  </p>
+                  <p className="t-eyebrow tabular-nums text-[var(--tone-deep)]">{fill(m.items, { n: cat.items.length })}</p>
                   <h2 id={`title-${cat.id}`} className="t-h2 mt-3">
                     {cat.title[locale]}
                   </h2>

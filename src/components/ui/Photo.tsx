@@ -13,14 +13,14 @@ type Props = {
   focus?: string;
   /** Le texte voisin décrit déjà l'image. */
   decorative?: boolean;
-  quality?: 60 | 72;
+  quality?: 75 | 85;
 };
 
 /**
  * Photo du café optimisée : AVIF/WebP, tailles responsive, flou de chargement, dimensions réservées (pas de CLS).
  * Toujours en `fill` : le conteneur parent fixe le format et le masque.
  */
-export function Photo({ id, locale, sizes, className = "", preload, focus, decorative, quality = 60 }: Props) {
+export function Photo({ id, locale, sizes, className = "", preload, focus, decorative, quality = 75 }: Props) {
   const p = photoManifest[id];
   return (
     <Image

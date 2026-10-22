@@ -38,7 +38,7 @@ function Shot({
         locale={locale}
         sizes={sizes}
         preload={preload}
-        quality={preload ? 72 : 60}
+        quality={preload ? 85 : 75}
         className="transition-transform duration-[1200ms] ease-[var(--ease-out)] group-hover:scale-[1.04]"
       />
     </div>
@@ -87,7 +87,7 @@ export function CafePage({ locale }: { locale: Locale }) {
             variant="enter"
             preload
             sizes="(min-width: 640px) 100vw, 204vw"
-            className="aspect-[4/5] sm:aspect-[16/9] lg:aspect-[21/9]"
+            className="mx-auto aspect-[4/3] max-w-[84rem] sm:aspect-[16/9] lg:aspect-[21/9]"
             radius="2rem"
           />
         </div>
@@ -97,8 +97,7 @@ export function CafePage({ locale }: { locale: Locale }) {
       <section aria-labelledby="space-title" className="bg-ivory py-20 md:py-32">
         <div className="wrap grid gap-12 md:grid-cols-12 md:items-center md:gap-8">
           <div className="md:col-span-5">
-            <p className="t-eyebrow text-lavender-deep">01</p>
-            <Lines id="space-title" lines={[c.space.title]} className="t-h1 mt-3" />
+            <Lines id="space-title" lines={[c.space.title]} className="t-h1" />
             <Reveal as="p" className="t-lede mt-6 text-ink/80">
               {c.space.text}
             </Reveal>
@@ -108,7 +107,7 @@ export function CafePage({ locale }: { locale: Locale }) {
             locale={locale}
             variant="clip-up"
             sizes="(min-width: 768px) 100vw, 204vw"
-            className="aspect-[4/5] md:col-span-6 md:col-start-7"
+            className="mx-auto aspect-[4/5] w-full max-w-[36rem] md:col-span-6 md:col-start-7"
             radius="999px 999px 1.75rem 1.75rem"
           />
         </div>
@@ -119,24 +118,34 @@ export function CafePage({ locale }: { locale: Locale }) {
         <div className="wrap">
           <div className="grid gap-8 md:grid-cols-12 md:items-end">
             <div className="md:col-span-6">
-              <p className="t-eyebrow text-lavender">02</p>
-              <Lines id="gestures-title" lines={[c.gestures.title]} className="t-h1 mt-3" />
+              <Lines id="gestures-title" lines={[c.gestures.title]} className="t-h1" />
             </div>
             <Reveal as="p" className="t-lede text-ivory/80 md:col-span-5 md:col-start-8">
               {c.gestures.text}
             </Reveal>
           </div>
-          <Shot i={2} locale={locale} variant="window" sizes="(min-width: 640px) 100vw, 204vw" className="mt-12 aspect-[4/5] sm:aspect-[16/9]" />
+          <Shot
+            i={2}
+            locale={locale}
+            variant="window"
+            sizes="(min-width: 640px) 100vw, 204vw"
+            className="mx-auto mt-12 aspect-[4/3] max-w-[80rem] sm:aspect-[16/9]"
+          />
         </div>
       </section>
 
       {/* Sur les étagères */}
       <section aria-labelledby="objects-title" className="bg-butter py-20 md:py-32">
         <div className="wrap grid gap-12 md:grid-cols-12 md:items-center md:gap-8">
-          <Shot i={3} locale={locale} variant="clip-left" sizes="(min-width: 768px) 86vw, 204vw" className="aspect-[4/5] md:col-span-5" />
+          <Shot
+            i={3}
+            locale={locale}
+            variant="clip-left"
+            sizes="(min-width: 768px) 86vw, 204vw"
+            className="mx-auto aspect-[4/5] w-full max-w-[36rem] md:col-span-5"
+          />
           <div className="md:col-span-5 md:col-start-8">
-            <p className="t-eyebrow text-caramel-deep">03</p>
-            <Lines id="objects-title" lines={[c.objects.title]} className="t-h1 mt-3" />
+            <Lines id="objects-title" lines={[c.objects.title]} className="t-h1" />
             <Reveal as="p" className="t-lede mt-6 text-ink/80">
               {c.objects.text}
             </Reveal>
@@ -148,20 +157,26 @@ export function CafePage({ locale }: { locale: Locale }) {
       <section aria-labelledby="window-title" className="bg-ivory pb-32 pt-20 md:pb-44 md:pt-32">
         <div className="wrap">
           <div className="max-w-3xl">
-            <p className="t-eyebrow text-matcha-deep">04</p>
-            <Lines id="window-title" lines={[c.window.title]} className="t-h1 mt-3" />
+            <Lines id="window-title" lines={[c.window.title]} className="t-h1" />
             <Reveal as="p" className="t-lede mt-6 text-ink/80">
               {c.window.text}
             </Reveal>
           </div>
           <div className="mt-12 grid gap-6 md:grid-cols-12 md:gap-8">
-            <Shot i={4} locale={locale} variant="circle" sizes="(min-width: 768px) 84vw, 164vw" className="aspect-square md:col-span-6" radius="50%" />
+            <Shot
+              i={4}
+              locale={locale}
+              variant="circle"
+              sizes="(min-width: 768px) 84vw, 164vw"
+              className="mx-auto aspect-square w-full max-w-[34rem] md:col-span-6"
+              radius="50%"
+            />
             <Shot
               i={5}
               locale={locale}
               variant="clip-up"
               sizes="(min-width: 768px) 86vw, 204vw"
-              className="aspect-[4/5] md:col-span-5 md:col-start-8 md:mt-32"
+              className="mx-auto aspect-[4/5] w-full max-w-[34rem] md:col-span-5 md:col-start-8 md:mt-32"
             />
           </div>
           <Reveal className="mt-16 flex flex-wrap gap-3">

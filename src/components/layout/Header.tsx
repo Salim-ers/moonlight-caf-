@@ -97,7 +97,6 @@ export function Header({ locale }: { locale: Locale }) {
                       className="relative flex min-h-11 items-center gap-2 rounded-full px-4 text-[0.95rem] font-medium transition-colors duration-300 hover:bg-[var(--nav-tone)]"
                       style={{ "--nav-tone": tones[pageTone[key]].soft, ...(active ? { background: "var(--nav-tone)" } : {}) } as CSSProperties}
                     >
-                      {active ? <span aria-hidden="true" className="dot" style={{ "--dot": tones[pageTone[key]].deep } as CSSProperties} /> : null}
                       <span className="roll">
                         <span>{t.nav[key]}</span>
                         <span aria-hidden="true">{t.nav[key]}</span>

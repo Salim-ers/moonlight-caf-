@@ -19,7 +19,7 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     // Photos fournies en 1672 × 941 : aucune taille supérieure n'est générée (pas d'agrandissement artificiel).
-    qualities: [60, 72],
+    qualities: [75, 85],
     deviceSizes: [480, 640, 828, 1080, 1280, 1672],
     imageSizes: [160, 256, 384],
     minimumCacheTTL: 2678400,

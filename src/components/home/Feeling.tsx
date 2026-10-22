@@ -25,7 +25,7 @@ export function Feeling({ locale }: { locale: Locale }) {
           </Reveal>
           <div className="feel-copy wrap">
             <p className="t-eyebrow">{t.eyebrow}</p>
-            <Lines id="feel-title" lines={t.title} accent={1} className="t-display mt-4" />
+            <Lines id="feel-title" lines={t.title} accent={1} className="t-display mt-4 lg:text-[clamp(3rem,5.4vw,5.75rem)]" />
             <Reveal as="p" className="t-lede mt-6 max-w-[34rem]">
               {t.text}
             </Reveal>

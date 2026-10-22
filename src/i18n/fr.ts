@@ -108,16 +108,10 @@ export const fr = {
       eyebrow: "Coffee shop créatif · Haut-Marais, Paris 3e",
       title: ["Votre pause,", "en plus", "coloré."],
       lede: "Café de spécialité, matcha fouetté minute, boissons colorées et cookies maison. Au 27 rue des Gravilliers.",
-      fig1: "Matcha sur lait rose",
-      fig2: "Boisson violette, versée minute",
-      palette: "La palette Moonlight",
-      chips: ["Matcha", "Rose", "Violet", "Bleu", "Caramel"],
-      scroll: "Défiler",
     },
     universe: {
       eyebrow: "L'univers Moonlight",
-      statement:
-        "Une petite adresse créative du Haut-Marais. On y vient pour un espresso au comptoir, un matcha fouetté à la commande, une boisson qui a de la couleur, un cookie fait maison — et pour la lumière.",
+      statement: "Une petite adresse du Haut-Marais : un bon café, un matcha fouetté minute, un cookie maison. Et beaucoup de lumière.",
       facts: [
         { label: "Depuis", value: "Juillet 2024" },
         { label: "Le café", value: "Torréfié par Fève" },
@@ -242,7 +236,7 @@ export const fr = {
     lede: "Un coffee shop de quartier, ouvert en juillet 2024 rue des Gravilliers, où chaque boisson est préparée avec la même attention.",
     chapters: [
       {
-        kicker: "01 — L'adresse",
+        kicker: "L'adresse",
         title: "Une petite adresse, beaucoup d'attention.",
         text: [
           "Moonlight a ouvert en juillet 2024 au 27 rue des Gravilliers, dans le Haut-Marais, entre Arts et Métiers et Beaubourg.",
@@ -250,7 +244,7 @@ export const fr = {
         ],
       },
       {
-        kicker: "02 — Le comptoir",
+        kicker: "Le comptoir",
         title: "Les bonnes choses prennent forme ici.",
         text: [
           "Le café vient de Fève, torréfacteur de spécialité. Le matcha est un matcha bio de cérémonie, tamisé avant chaque préparation.",
@@ -258,7 +252,7 @@ export const fr = {
         ],
       },
       {
-        kicker: "03 — La vitrine",
+        kicker: "La vitrine",
         title: "Le goût du détail.",
         text: [
           "Les pâtisseries sont faites maison : de grands cookies, des cakes en tranches, un granola bowl.",
@@ -266,7 +260,7 @@ export const fr = {
         ],
       },
       {
-        kicker: "04 — Le lieu",
+        kicker: "Le lieu",
         title: "Un café qui se vit autant qu'il se goûte.",
         text: [
           "En semaine dès 8h30, le week-end dès 9h30. Un espresso au comptoir, un matcha glacé à emporter ou une heure à table avec un cookie.",

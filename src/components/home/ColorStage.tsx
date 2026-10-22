@@ -15,8 +15,8 @@ export type ColorOption = {
   dot: string;
 };
 
-/** Zoom ×1,9 sur un point de la photo, recadré pour que l'image couvre toujours le cadre. */
-const SCALE = 1.9;
+/** Zoom ×1,5 sur un point de la photo, recadré pour que l'image couvre toujours le cadre. */
+const SCALE = 1.5;
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 function zoomTo(x: number, y: number) {
   const tx = clamp(50 - SCALE * x, 100 - 100 * SCALE, 0);
@@ -109,11 +109,10 @@ export function ColorStage({
                   userPicked.current = true;
                   setIdx(i);
                 }}
-                className={`chip min-h-11 gap-2 px-4 font-semibold transition-[background-color,color,transform] duration-300 hover:-translate-y-0.5 ${
+                className={`chip min-h-11 px-5 font-semibold transition-[background-color,color,transform] duration-300 hover:-translate-y-0.5 ${
                   i === idx ? "bg-ink text-ivory" : "bg-ivory/80"
                 }`}
               >
-                <span className="dot" style={{ "--dot": op.dot } as CSSProperties} aria-hidden="true" />
                 {op.word}
               </button>
             ))}
@@ -126,10 +125,6 @@ export function ColorStage({
             <div className="cc-photo" style={{ transform: zoomTo(o.x, o.y) }}>
               {photo}
             </div>
-            <span className="cc-pin" aria-hidden="true">
-              <span className="dot h-3 w-3" style={{ "--dot": "var(--cc-dot)" } as CSSProperties} />
-              {o.word}
-            </span>
           </div>
         </div>
       </div>

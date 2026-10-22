@@ -91,7 +91,7 @@ export function LightboxProvider({ items, labels, children }: { items: LightboxI
               </div>
               <div className="relative flex-1" onClick={close}>
                 <div key={index} className="lightbox-img absolute inset-x-[var(--gutter)] inset-y-2 md:inset-x-24">
-                  <Image src={p.src} alt={p.alt} fill sizes="100vw" quality={72} className="object-contain" onClick={(e) => e.stopPropagation()} />
+                  <Image src={p.src} alt={p.alt} fill sizes="100vw" quality={85} className="object-contain" onClick={(e) => e.stopPropagation()} />
                 </div>
               </div>
               <div className="wrap flex min-h-24 items-center justify-between gap-6 py-4">

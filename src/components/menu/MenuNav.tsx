@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Printer } from "lucide-react";
 
 type Cat = { id: string; title: string; dot: string };
@@ -59,7 +59,6 @@ export function MenuNav({ cats, label, printLabel }: { cats: Cat[]; label: strin
                   onClick={() => setActive(c.id)}
                   className={`flex min-h-11 items-center gap-2 rounded-full px-4 text-[0.95rem] font-semibold transition-colors duration-300 ${active === c.id ? "text-ivory" : "text-ink hover:text-ink/70"}`}
                 >
-                  <span className="dot" style={{ "--dot": c.dot } as CSSProperties} aria-hidden="true" />
                   {c.title}
                 </a>
               </li>

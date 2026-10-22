@@ -6,7 +6,6 @@ import { TLink } from "@/components/motion/PageTransition";
 import { href, type Locale, type NavKey } from "@/i18n/config";
 import { getDictionary } from "@/i18n";
 import { siteConfig, fullAddress } from "@/data/site-config";
-import { pageTone, tones } from "@/lib/tones";
 import { LangSwitch } from "./LangSwitch";
 import { OpenStatus } from "@/components/ui/OpenStatus";
 
@@ -60,15 +59,9 @@ export function MobileMenu({ open, onClose, locale }: { open: boolean; onClose: 
           {ITEMS.map((key, i) => (
             <li key={key} className="mm-item border-b border-ink/12 last:border-b-0" style={{ "--i": i } as CSSProperties}>
               <TLink href={href(key, locale)} onClick={onClose} className="group flex items-center gap-4 py-2.5">
-                <span className="t-small w-6 font-semibold tabular-nums text-ink">{String(i + 1).padStart(2, "0")}</span>
                 <span className="font-[family-name:var(--font-display)] text-[clamp(2.2rem,10.5vw,4rem)] font-bold leading-[1] tracking-[-0.035em] transition-transform duration-500 ease-[var(--ease-out)] group-hover:translate-x-1.5">
                   {t.nav[key]}
                 </span>
-                <span
-                  aria-hidden="true"
-                  className="dot ml-auto h-4 w-4 scale-75 transition-transform duration-500 group-hover:scale-110"
-                  style={{ "--dot": tones[pageTone[key]].deep } as CSSProperties}
-                />
               </TLink>
             </li>
           ))}

@@ -68,7 +68,7 @@ export function StoryPage({ locale }: { locale: Locale }) {
                   {ch.photo ? (
                     <Reveal
                       variant={i === 2 ? "circle" : i === 1 ? "clip-left" : "clip-up"}
-                      className={`relative overflow-hidden bg-[var(--tone-soft)] ${i === 2 ? "aspect-square" : "aspect-[4/5]"}`}
+                      className={`relative mx-auto w-full overflow-hidden bg-[var(--tone-soft)] ${i === 2 ? "aspect-square max-w-[34rem]" : "aspect-[4/5] max-w-[36rem]"}`}
                       style={{ borderRadius: ch.shape, "--clip-r": ch.shape } as CSSProperties}
                     >
                       <div className="zoom absolute inset-0">

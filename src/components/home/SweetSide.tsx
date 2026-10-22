@@ -2,13 +2,11 @@ import type { CSSProperties } from "react";
 import { Lines, Reveal } from "@/components/motion/Reveal";
 import { Photo } from "@/components/ui/Photo";
 import { ButtonLink } from "@/components/ui/ButtonLink";
-import { CircleText } from "@/components/ui/Doodles";
 import { findItem, formatPrice } from "@/data/menu-data";
 import { getDictionary } from "@/i18n";
 import { href, type Locale } from "@/i18n/config";
 
 const SWEETS = ["cookie", "cake", "granola-bowl"];
-const FLAVOR_DOTS = ["var(--color-matcha)", "var(--color-ink)", "var(--color-caramel-deep)", "var(--color-pink-deep)"];
 
 /**
  * SCÈNE 06 — The sweet side. Bandeau typographique incliné en séparateur, fond caramel,
@@ -40,10 +38,7 @@ export function SweetSide({ locale }: { locale: Locale }) {
           <Reveal as="ul" variant="stagger" className="mt-4 flex flex-wrap gap-2">
             {cookie.variants?.[locale].map((f, i) => (
               <li key={f} style={{ "--i": i } as CSSProperties}>
-                <span className="chip float" style={{ "--float-delay": `${-i * 1.1}s` } as CSSProperties}>
-                  <span className="dot" style={{ "--dot": FLAVOR_DOTS[i % FLAVOR_DOTS.length] } as CSSProperties} aria-hidden="true" />
-                  {f}
-                </span>
+                <span className="chip">{f}</span>
               </li>
             ))}
           </Reveal>
@@ -75,14 +70,6 @@ export function SweetSide({ locale }: { locale: Locale }) {
               </div>
             </div>
           </Reveal>
-          <div aria-hidden="true" className="sweet-sticker">
-            <CircleText
-              id="sweet-sticker"
-              text={locale === "fr" ? "Fait maison • Fait maison • Fait maison • " : "Homemade • Homemade • Homemade • "}
-              className="absolute inset-0 h-full w-full text-ink"
-            />
-            <span className="font-[family-name:var(--font-serif)] text-[2rem] italic leading-none">{formatPrice(cookie.price, locale)}</span>
-          </div>
         </figure>
       </div>
     </section>

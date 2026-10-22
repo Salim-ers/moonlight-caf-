@@ -100,16 +100,10 @@ export const en: Dictionary = {
       eyebrow: "Creative coffee shop · Upper Marais, Paris",
       title: ["Your break,", "in full", "colour."],
       lede: "Specialty coffee, matcha whisked to order, colourful drinks and homemade cookies. At 27 rue des Gravilliers.",
-      fig1: "Matcha over pink milk",
-      fig2: "Purple drink, poured to order",
-      palette: "The Moonlight palette",
-      chips: ["Matcha", "Pink", "Purple", "Blue", "Caramel"],
-      scroll: "Scroll",
     },
     universe: {
       eyebrow: "The Moonlight world",
-      statement:
-        "A small creative spot in the Upper Marais. People come for an espresso at the counter, a matcha whisked to order, a drink with some colour, a homemade cookie — and for the light.",
+      statement: "A small spot in the Upper Marais: good coffee, matcha whisked to order, a homemade cookie. And plenty of light.",
       facts: [
         { label: "Since", value: "July 2024" },
         { label: "Coffee", value: "Roasted by Fève" },
@@ -234,7 +228,7 @@ export const en: Dictionary = {
     lede: "A neighbourhood coffee shop, opened in July 2024 on rue des Gravilliers, where every drink is made with the same care.",
     chapters: [
       {
-        kicker: "01 — The address",
+        kicker: "The address",
         title: "A small place, a lot of care.",
         text: [
           "Moonlight opened in July 2024 at 27 rue des Gravilliers, in the Upper Marais, between Arts et Métiers and Beaubourg.",
@@ -242,7 +236,7 @@ export const en: Dictionary = {
         ],
       },
       {
-        kicker: "02 — The counter",
+        kicker: "The counter",
         title: "Good things take shape here.",
         text: [
           "The coffee comes from Fève, a specialty roaster. The matcha is organic and ceremonial grade, sifted before every drink.",
@@ -250,12 +244,12 @@ export const en: Dictionary = {
         ],
       },
       {
-        kicker: "03 — The window",
+        kicker: "The window",
         title: "A taste for detail.",
         text: ["The pastries are homemade: big cookies, sliced cakes, a granola bowl.", "They line up in the window, near the entrance."],
       },
       {
-        kicker: "04 — The place",
+        kicker: "The place",
         title: "A café you live as much as you taste.",
         text: [
           "From 8:30am on weekdays, 9:30am at weekends. An espresso at the counter, an iced matcha to go or an hour at a table with a cookie.",

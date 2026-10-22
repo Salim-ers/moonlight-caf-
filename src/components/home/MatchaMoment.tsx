@@ -27,8 +27,7 @@ export function MatchaMoment({ locale }: { locale: Locale }) {
             <ol className="matcha-steps mt-10 grid gap-5 sm:grid-cols-3 sm:gap-6">
               {t.steps.map((s, i) => (
                 <li key={s.title} className="matcha-step border-t-[1.5px] border-ivory/35 pt-4" style={{ "--i": i } as CSSProperties}>
-                  <span className="t-eyebrow tabular-nums text-matcha-soft">0{i + 1}</span>
-                  <h3 className="mt-2 text-[1.5rem] leading-none tracking-[-0.02em]">{s.title}</h3>
+                  <h3 className="text-[1.5rem] leading-none tracking-[-0.02em]">{s.title}</h3>
                   <p className="t-small mt-2 text-ivory/75">{s.text}</p>
                 </li>
               ))}

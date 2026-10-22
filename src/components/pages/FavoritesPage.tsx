@@ -35,7 +35,6 @@ const REVEALS: Record<(typeof LAYOUTS)[number], RevealVariant> = {
 export function FavoritesPage({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
   const f = t.favoritesPage;
-  const total = String(favorites.length).padStart(2, "0");
 
   return (
     <>
@@ -50,7 +49,7 @@ export function FavoritesPage({ locale }: { locale: Locale }) {
             style={{ "--d": "0.08s" } as CSSProperties}
           >
             <div className="zoom absolute inset-0">
-              <Photo id="p15" locale={locale} preload quality={72} sizes="(min-width: 1024px) 56vw, 132vw" />
+              <Photo id="p15" locale={locale} preload quality={85} sizes="(min-width: 1024px) 56vw, 132vw" />
             </div>
           </div>
         }
@@ -58,7 +57,7 @@ export function FavoritesPage({ locale }: { locale: Locale }) {
 
       <nav aria-label={f.index} className="bg-ivory">
         <ol className="wrap flex flex-wrap gap-2 py-8">
-          {favorites.map((fav, i) => {
+          {favorites.map((fav) => {
             const item = findItem(fav.itemId);
             return (
               <li key={fav.itemId}>
@@ -67,7 +66,6 @@ export function FavoritesPage({ locale }: { locale: Locale }) {
                   className="chip min-h-11 gap-2 border border-ink/10 font-semibold transition-colors hover:bg-[var(--tone-soft)]"
                   style={toneVars(fav.tone)}
                 >
-                  <span className="tabular-nums text-ink-soft">{String(i + 1).padStart(2, "0")}</span>
                   {item.name[locale]}
                 </TLink>
               </li>
@@ -79,13 +77,10 @@ export function FavoritesPage({ locale }: { locale: Locale }) {
       <ol>
         {favorites.map((fav, i) => {
           const item = findItem(fav.itemId);
-          const n = String(i + 1).padStart(2, "0");
           const layout = fav.photo ? LAYOUTS[i % LAYOUTS.length] : "type";
           const text = (
             <div className="fav-text">
-              <p className="t-eyebrow tabular-nums text-[var(--tone-deep)]">
-                {n} / {total}
-              </p>
+              <p className="t-eyebrow text-[var(--tone-deep)]">{item.category.title[locale]}</p>
               <Lines as="h2" lines={[item.name[locale]]} className="t-h1 mt-4" />
               <Reveal className="mt-6">
                 <p className="font-[family-name:var(--font-serif)] text-[2.4rem] italic leading-none tabular-nums">{formatPrice(item.price, locale)}</p>
@@ -93,7 +88,6 @@ export function FavoritesPage({ locale }: { locale: Locale }) {
                 <ul className="mt-6 flex flex-wrap gap-2">
                   {fav.notes[locale].map((note) => (
                     <li key={note} className="chip">
-                      <span className="dot" style={{ "--dot": "var(--tone)" } as CSSProperties} aria-hidden="true" />
                       {note}
                     </li>
                   ))}
@@ -104,9 +98,6 @@ export function FavoritesPage({ locale }: { locale: Locale }) {
 
           return (
             <li key={fav.itemId} id={item.id} className={`fav fav--${layout}`} style={toneVars(fav.tone)}>
-              <span aria-hidden="true" className="fav-num">
-                {n}
-              </span>
               <div className="wrap fav-grid">
                 {layout === "type" ? (
                   <div className="fav-type" aria-hidden="true">

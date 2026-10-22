@@ -4,18 +4,15 @@ import { Enter } from "@/components/motion/Reveal";
 import { Photo } from "@/components/ui/Photo";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { OpenStatus } from "@/components/ui/OpenStatus";
-import { CircleText, SteamCup, Sparkle } from "@/components/ui/Doodles";
 import { href, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n";
 
-const PALETTE = ["var(--color-matcha)", "var(--color-pink)", "var(--color-lavender-deep)", "var(--color-blue)", "var(--color-caramel)"];
-
 /**
  * SCÈNE 01 — Hero « campagne colorée ».
- * Titre monumental, arche photographique (matcha sur lait rose), médaillon (boisson violette),
- * formes de couleur, badge tournant et palette. Tout est rendu côté serveur et visible au premier
- * affichage ; l'entrée est en CSS pur (≤ 0,9 s), la parallaxe souris et le défilement sont
- * pilotés par des variables CSS (`--mx`, `--my`, `--p`) : aucun JavaScript propre au hero.
+ * Titre monumental, arche photographique (matcha sur lait rose), médaillon (boisson violette)
+ * et deux formes de couleur. Tout est rendu côté serveur et visible au premier affichage ;
+ * l'entrée est en CSS pur, la parallaxe souris et le défilement sont pilotés par des
+ * variables CSS (`--mx`, `--my`, `--p`) : aucun JavaScript propre au hero.
  */
 export function Hero({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
@@ -78,70 +75,20 @@ export function Hero({ locale }: { locale: Locale }) {
             <div className="hero-ptr" style={{ "--depth": -12 } as CSSProperties}>
               <figure className="hero-arch enter-rise" style={{ "--d": "0.06s" } as CSSProperties}>
                 <div className="zoom absolute inset-0">
-                  <Photo id="p06" locale={locale} preload quality={60} sizes="(min-width: 1024px) 80vw, 175vw" />
+                  <Photo id="p06" locale={locale} preload quality={85} sizes="(min-width: 1024px) 80vw, 175vw" />
                 </div>
               </figure>
-              <Enter as="p" delay={0.62} className="hero-tag hero-tag--1">
-                <span className="dot" style={{ "--dot": "var(--color-matcha)" } as CSSProperties} />
-                <span>
-                  <span className="font-medium text-ink-soft">fig. 01 — </span>
-                  {h.fig1}
-                </span>
-              </Enter>
             </div>
           </div>
 
           <div className="hero-layer hero-layer--medal">
             <div className="hero-ptr" style={{ "--depth": 22 } as CSSProperties}>
               <figure className="hero-medal enter-pop" style={{ "--d": "0.32s" } as CSSProperties}>
-                <Photo id="p02" locale={locale} quality={60} sizes="(min-width: 1024px) 26vw, 66vw" />
+                <Photo id="p02" locale={locale} quality={85} sizes="(min-width: 1024px) 26vw, 66vw" />
               </figure>
-              <Enter as="p" delay={0.72} className="hero-tag hero-tag--2">
-                <span className="dot" style={{ "--dot": "var(--color-lavender-deep)" } as CSSProperties} />
-                <span>
-                  <span className="font-medium text-ink-soft">fig. 02 — </span>
-                  {h.fig2}
-                </span>
-              </Enter>
-            </div>
-          </div>
-
-          <div aria-hidden="true" className="hero-layer hero-layer--badge">
-            <div className="hero-ptr" style={{ "--depth": 30 } as CSSProperties}>
-              <div className="hero-badge enter-pop" style={{ "--d": "0.5s" } as CSSProperties}>
-                <CircleText id="hero-badge-text" text={`${t.common.marquee.join(" • ")} • `} className="absolute inset-0 h-full w-full" />
-                <SteamCup className="relative h-[42%] w-[42%]" />
-              </div>
-            </div>
-          </div>
-
-          <div aria-hidden="true" className="hero-layer hero-layer--spark">
-            <div className="hero-ptr" style={{ "--depth": 36 } as CSSProperties}>
-              <Sparkle className="hero-spark enter-pop text-ink" style={{ "--d": "0.8s" } as CSSProperties} />
             </div>
           </div>
         </div>
-
-        <div className="hero-palette">
-          <Enter as="p" delay={0.5} className="t-eyebrow mb-2 inline-block rounded-full bg-ivory/90 px-3 py-1.5 text-ink">
-            {h.palette}
-          </Enter>
-          <ul className="flex flex-wrap gap-2">
-            {h.chips.map((c, i) => (
-              <li key={c} className="enter-up" style={{ "--d": `${0.56 + i * 0.06}s` } as CSSProperties}>
-                <span className="chip float" style={{ "--float-delay": `${-i * 0.9}s`, "--float-d": `${4.5 + (i % 3)}s` } as CSSProperties}>
-                  <span className="dot" style={{ "--dot": PALETTE[i] } as CSSProperties} />
-                  {c}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div aria-hidden="true" className="hero-scroll t-eyebrow">
-        <span>{h.scroll}</span>
-        <span className="hero-scroll-line" />
       </div>
     </section>
   );

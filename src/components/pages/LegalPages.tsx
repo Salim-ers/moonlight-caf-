@@ -205,6 +205,12 @@ export function CookiesPage({ locale }: { locale: Locale }) {
       <Section title={fr ? "Ce qui est stocké sur votre appareil" : "What is stored on your device"}>
         <ul className="list-disc space-y-2 pl-5">
           <li>
+            <strong>ml-boot</strong> (sessionStorage) :{" "}
+            {fr
+              ? "évite de rejouer l'apparition du logo à chaque page pendant la visite. Effacé à la fermeture de l'onglet."
+              : "avoids replaying the logo opening on every page during your visit. Cleared when you close the tab."}
+          </li>
+          <li>
             <strong>ml-consent-maps</strong> (localStorage) :{" "}
             {fr
               ? "mémorise votre accord pour afficher le plan Google Maps. Présent uniquement si vous l'avez donné."

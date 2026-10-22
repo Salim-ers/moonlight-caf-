@@ -14,7 +14,7 @@ Tout ce qui figure ici a été **réellement exécuté**. Les scripts sont fourn
 | Audit des photos | `npm run check:photos` | 26 photos, 26 emplacements uniques, aucun doublon MD5 ni perceptuel |
 | Build de production | `npm run build` | OK — 26 routes, toutes statiques sauf le 404 |
 
-## 2. Recette fonctionnelle (38/38)
+## 2. Recette fonctionnelle (39/39)
 
 `CHROME_PATH=… node scripts/qa.mjs http://localhost:3000`
 
@@ -29,7 +29,9 @@ Tout ce qui figure ici a été **réellement exécuté**. Les scripts sont fourn
 | Menu mobile | contenu derrière `inert`, focus dans le menu, Échap ferme et rend le focus, navigation | OK |
 | Langue | /la-carte → /en/menu | OK |
 | Carte | 6 catégories, 33 produits, 5 suppléments, prix exacts, lien profond `#patisseries`, une seule photo | OK |
-| Favoris | 6 créations, compteur « 6 créations », numérotation 01/06 → 06/06 générée | OK |
+| Favoris | 6 créations affichées, compteur « 6 créations » généré depuis les données | OK |
+| Logo d'ouverture | logo complet visible ≈ 1 s à la première page, n'intercepte pas les clics, ne rejoue pas au rechargement | OK |
+| Sobriété | aucune étiquette « fig. 0x », aucun « Défiler », aucune numérotation « 01 / 06 » sur les 18 pages | OK |
 | Visionneuse | ouverture, flèche clavier, Échap | OK |
 | Plan Google Maps | aucun iframe avant accord, iframe après, retrait sur /cookies effectif | OK |
 | Animations réduites | aucun contenu masqué, navigation sans voile | OK |

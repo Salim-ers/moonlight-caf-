@@ -29,11 +29,11 @@ Chaque page a sa couleur d'accent (reprise par la transition de page et l'indica
 - **Le lettrage manuscrit du logo** comme signature, toujours dans le logo complet.
 
 ## Logo
-Toujours le logo officiel **complet** (jeune femme, tasse, vapeur, lettrage « Moonlight café ») : en-tête, transition de page, pied de page, menu mobile, Instagram, Notre histoire, 404, image de partage. Jamais la tasse seule, jamais recadré, toujours en `object-fit: contain`.
+Toujours le logo officiel **complet** (jeune femme, tasse, vapeur, lettrage « Moonlight café ») : ouverture du site (≈ 1 s, une fois par visite), en-tête, transition de page, pied de page, menu mobile, Instagram, Notre histoire, 404, image de partage. Jamais la tasse seule, jamais recadré, toujours en `object-fit: contain`.
 
 ## Les neuf scènes de l'accueil
-1. **Hero campagne** (rose) : titre monumental, arche photographique (matcha sur lait rose), médaillon (boisson violette), forme matcha, badge tournant, palette ; parallaxe souris et défilement.
-2. **L'univers** (ivoire) : une phrase révélée mot à mot au défilement, le lettrage du comptoir, les faits.
+1. **Hero campagne** (rose) : titre monumental, arche photographique (matcha sur lait rose), médaillon (boisson violette), deux formes de couleur ; parallaxe souris et défilement. Volontairement sobre : ni étiquettes « fig. », ni pastilles, ni badge, ni indicateur « défiler ».
+2. **L'univers** (ivoire) : une phrase courte révélée mot à mot au défilement et les faits à gauche, le lettrage du comptoir à droite.
 3. **Les signatures** (lavande) : rail horizontal — la table vue du dessus qui tourne, puis six cartes colorées illustrées.
 4. **Matcha moment** (vert) : le vert s'ouvre en cercle ; scène épinglée, photo dans un iris qui s'agrandit, étapes qui s'allument.
 5. **Coffee & colors** : choisir une couleur zoome sur la tasse correspondante et teinte la section.
@@ -41,6 +41,12 @@ Toujours le logo officiel **complet** (jeune femme, tasse, vapeur, lettrage « M
 7. **The Moonlight feeling** (ivoire) : une fenêtre arrondie s'ouvre sur la salle jusqu'au plein écran.
 8. **Community** (bleu) : lettrage géant @moonlight.cafe.paris qui glisse et ondule — pas de grille de photos répétées.
 9. **Come say hello** (crème) : tampon « 27 », adresse copiable, horaires du jour, itinéraire.
+
+## Retenue
+Pas de numérotations décoratives (« 01 / 06 »), de pastilles de couleur devant les libellés, d'étiquettes « fig. », d'étoiles ou d'indicateur « défiler » : ces tics de gabarit diluent l'identité. La couleur vient des aplats, des photos et des mots en italique.
+
+## Photographie et netteté
+Les photos fournies mesurent 1672 × 941 px : aucun cadrage n'est affiché au-delà de cette définition (arche, cercles, fenêtres plafonnés), compression AVIF qualité 75–85, zooms d'animation limités à 6 %.
 
 ## Langage de mouvement
 Transform, opacity et clip-path uniquement ; easing « expo out » pour les entrées, « in-out » pour les masques. Révélations variées (rideau vertical, horizontal, cercle, fenêtre, arche, pop), jamais la même sur toutes les photos. Rien ne bloque la lecture ni le clic ; tout est désactivé avec « réduire les animations ».

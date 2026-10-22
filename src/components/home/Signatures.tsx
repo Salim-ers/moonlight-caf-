@@ -18,7 +18,6 @@ import { DragRail } from "./DragRail";
 export function Signatures({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
   const s = t.home.signatures;
-  const total = String(favorites.length).padStart(2, "0");
   return (
     <section aria-labelledby="sig-title" className="relative overflow-hidden bg-lavender-soft py-24 md:py-32">
       <div className="wrap grid gap-8 md:grid-cols-12 md:items-end">
@@ -49,14 +48,11 @@ export function Signatures({ locale }: { locale: Locale }) {
               </figcaption>
             </figure>
           </li>
-          {favorites.map((f, i) => {
+          {favorites.map((f) => {
             const item = findItem(f.itemId);
             return (
               <li key={f.itemId}>
                 <TLink href={`${href("favorites", locale)}#${item.id}`} className="sig-card group" style={toneVars(f.tone)} draggable={false}>
-                  <span className="t-eyebrow tabular-nums text-ink/70">
-                    {String(i + 1).padStart(2, "0")} / {total}
-                  </span>
                   <span className="sig-stage" aria-hidden="true">
                     <svg viewBox="0 0 200 200" className="sig-shape">
                       <path fill="var(--tone)" d="M104 12c40 2 76 30 84 70 8 42-14 86-52 104-36 18-86 10-112-20C-2 136 6 86 30 52 50 24 72 10 104 12z" />

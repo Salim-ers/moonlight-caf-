@@ -10,9 +10,11 @@ const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH 
 const results = [];
 const ok = (name, pass, info = "") => results.push([pass ? "PASS" : "FAIL", name, info]);
 const errors = [];
-async function newPage(opts = {}) {
+async function newPage(opts = {}, { boot = false } = {}) {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, ...opts });
   const p = await ctx.newPage();
+  // le logo d'ouverture ne joue qu'une fois par visite : on le neutralise sauf pour son propre test
+  if (!boot) await p.addInitScript(() => sessionStorage.setItem("ml-boot", "1"));
   p.on("pageerror", (e) => errors.push(`${p.url()} pageerror ${e.message}`));
   p.on("console", (m) => {
     if (m.type() === "error" && !/google|maps|gstatic|ERR_|net::|404/.test(m.text())) errors.push(`${p.url()} console ${m.text().slice(0, 200)}`);
@@ -81,6 +83,7 @@ for (const r of routes) {
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
       cjk: /[\u3040-\u30ff\u3400-\u9fff]/.test(document.body.innerText),
       asianRefs: /japonais|coréen|chinois|japanese|korean|chinese/i.test(document.body.innerText),
+      tropes: /fig\. 0\d|Défiler|Scroll|0\d \/ 0\d/.test(document.body.innerText),
       links: [...document.querySelectorAll("a[href]")].map((a) => a.getAttribute("href")),
       photos,
     };
@@ -104,8 +107,9 @@ for (const r of routes) {
       !d.broken &&
       d.overflow <= 0 &&
       !d.cjk &&
-      !d.asianRefs,
-    `status=${res.status()} h1=${d.h1} hreflang=${d.alternates} noAlt=${d.noAlt} broken=${d.broken} overflow=${d.overflow} cjk=${d.cjk} refs=${d.asianRefs} photos=${d.photos.length}`,
+      !d.asianRefs &&
+      !d.tropes,
+    `status=${res.status()} h1=${d.h1} hreflang=${d.alternates} noAlt=${d.noAlt} broken=${d.broken} overflow=${d.overflow} cjk=${d.cjk} refs=${d.asianRefs} tropes=${d.tropes} photos=${d.photos.length}`,
   );
 }
 const dup = [...photoPages].filter(([, s]) => s.size > 1);
@@ -247,13 +251,36 @@ for (const r of ["/inexistant", "/en/nothing"]) {
   await p.goto(BASE + "/nos-favoris", { waitUntil: "networkidle" });
   const d = await p.evaluate(() => ({
     items: document.querySelectorAll("li.fav").length,
-    labels: [...document.querySelectorAll("li.fav .fav-text .t-eyebrow")].map((e) => e.textContent.replace(/\s/g, "")),
+    names: [...document.querySelectorAll("li.fav h2")].map((h) => h.textContent.trim()),
     count: document.body.innerText.match(/(\d+)\s+CRÉATIONS/i)?.[1],
   }));
+  ok("favoris : 6 créations affichées, compteur « 6 créations » généré", d.items === 6 && d.count === "6" && d.names.length === 6, JSON.stringify(d));
+}
+
+// 8 bis. Logo d'ouverture : une fois par visite, logo complet, ne bloque pas
+{
+  const p = await newPage({}, { boot: true });
+  await p.goto(BASE + "/", { waitUntil: "commit" });
+  await p.waitForTimeout(350);
+  const during = await p.evaluate(() => {
+    const img = document.querySelector(".pt .pt-logo");
+    const cs = getComputedStyle(document.querySelector(".pt"));
+    return {
+      boot: document.documentElement.classList.contains("boot"),
+      visible: cs.visibility === "visible" && Number(cs.opacity) > 0.9,
+      pe: cs.pointerEvents,
+      src: img?.getAttribute("src"),
+    };
+  });
+  await p.waitForTimeout(1300);
+  const after = await p.evaluate(() => getComputedStyle(document.querySelector(".pt")).visibility === "hidden");
+  await p.reload({ waitUntil: "commit" });
+  await p.waitForTimeout(200);
+  const again = await p.evaluate(() => document.documentElement.classList.contains("boot"));
   ok(
-    "favoris : 6 créations numérotées 01/06 → 06/06",
-    d.items === 6 && d.count === "6" && d.labels.join() === "01/06,02/06,03/06,04/06,05/06,06/06",
-    JSON.stringify(d),
+    "ouverture : logo complet ≈ 1 s, non bloquant, une seule fois par visite",
+    during.boot && during.visible && during.pe === "none" && /moonlight-logo/.test(during.src) && after && !again,
+    JSON.stringify({ during, after, again }),
   );
 }
 

@@ -12,10 +12,11 @@ import { localBusinessJsonLd } from "@/lib/seo";
 /**
  * Script exécuté avant le premier rendu (≈ 300 octets, aucune attente) :
  * - active les animations seulement si le visiteur n'a pas demandé à les réduire ;
+ * - à la première page de la visite, affiche le logo complet ≈ 0,8 s puis le lève (CSS pur,
+ *   pendant que la page se charge dessous ; rien n'est bloqué, aucun bouton « passer ») ;
  * - garde-fou : si le moteur d'animation ne démarre pas en 4 s, tout le contenu s'affiche.
- * Il n'y a plus d'introduction : le hero est visible et cliquable dès le premier affichage.
  */
-const bootScript = `(function(){var d=document.documentElement;try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches)d.classList.add('js-motion')}catch(e){}setTimeout(function(){if(!window.__mlReady)d.classList.add('motion-failsafe')},4000)})();`;
+const bootScript = `(function(){var d=document.documentElement;try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches){d.classList.add('js-motion');if(!sessionStorage.getItem('ml-boot')){sessionStorage.setItem('ml-boot','1');d.classList.add('boot');setTimeout(function(){d.classList.remove('boot')},2600)}}}catch(e){}setTimeout(function(){if(!window.__mlReady)d.classList.add('motion-failsafe')},4000)})();`;
 
 export function RootShell({ locale, children }: { locale: Locale; children: ReactNode }) {
   const t = getDictionary(locale);
