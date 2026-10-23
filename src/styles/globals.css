@@ -1613,6 +1613,14 @@ html.js-motion [data-reveal="words"]:not(.is-in) > span {
 /* ------------------------------------------------------------------ */
 /*  Barre d'actions mobile (téléphones et tablettes)                    */
 /* ------------------------------------------------------------------ */
+/* Toujours visible sur téléphone et tablette (y compris tablette à l'horizontale, détectée par
+   l'écran tactile) ; le pied de page réserve sa hauteur pour que rien ne passe dessous. */
+:root {
+  --dock-space: calc(5rem + env(safe-area-inset-bottom, 0px));
+}
+footer[data-site-footer] {
+  padding-bottom: var(--dock-space);
+}
 .dock {
   position: fixed;
   left: max(0.75rem, env(safe-area-inset-left, 0px));
@@ -1627,18 +1635,11 @@ html.js-motion [data-reveal="words"]:not(.is-in) > span {
   border-radius: 999px;
   background: rgb(39 36 32 / 0.94);
   box-shadow: 0 18px 40px -18px rgb(39 36 32 / 0.6);
-  transform: translateY(calc(100% + 2rem));
-  transition: transform 0.45s var(--ease-out);
-}
-.dock[data-on="true"] {
-  transform: none;
 }
 .dock .btn {
-  flex: 1;
-  min-height: 2.9rem;
+  flex: 1 1 0;
+  min-height: 3rem;
   padding: 0 1rem;
-}
-.dock .btn {
   white-space: nowrap;
 }
 @media (max-width: 23rem) {
@@ -1650,25 +1651,15 @@ html.js-motion [data-reveal="words"]:not(.is-in) > span {
     display: none;
   }
 }
-.dock-menu {
-  display: grid;
-  flex: 0 0 auto;
-  place-items: center;
-  width: 2.9rem;
-  height: 2.9rem;
-  border-radius: 50%;
-  color: var(--color-ivory);
-  background: rgb(255 249 240 / 0.12);
-}
-.dock-menu:active {
-  transform: scale(0.94);
-}
 .dock .btn-dock-accent {
   --btn-bg: var(--color-pink);
   --btn-fg: var(--color-ink);
   --btn-fill: var(--color-ivory);
 }
-@media (min-width: 64rem) {
+@media (min-width: 64rem) and (hover: hover) and (pointer: fine) {
+  :root {
+    --dock-space: 0px;
+  }
   .dock {
     display: none;
   }
@@ -1745,6 +1736,7 @@ html.js-motion [data-reveal="words"]:not(.is-in) > span {
   .no-print,
   header[data-site-header],
   footer[data-site-footer],
+  .dock,
   .pt {
     display: none !important;
   }

@@ -58,6 +58,7 @@ export const en: Dictionary = {
     home: "Moonlight Café, home",
     newTab: "(opens in a new tab)",
     language: "Language",
+    quickActions: "Quick actions",
   },
   nav: {
     home: "Home",

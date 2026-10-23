@@ -21,7 +21,7 @@ export function MobileMenu({ open, onClose, locale }: { open: boolean; onClose: 
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const targets = [document.getElementById("main"), document.querySelector("[data-site-footer]")];
+    const targets = [document.getElementById("main"), document.querySelector("[data-site-footer]"), document.querySelector("[data-site-dock]")];
     if (!open) return;
     targets.forEach((el) => el?.setAttribute("inert", ""));
     document.documentElement.style.overflow = "hidden";

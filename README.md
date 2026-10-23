@@ -122,7 +122,7 @@ Le fichier original (`assets/originals/logo-moonlight-cafe-original.png`, identi
 - **Entrées au chargement** (hero, en-têtes) : CSS pur, ≤ 0,9 s, synchronisées avec la levée du voile.
 - **Révélations au défilement** : attribut `data-reveal` (rideaux, cercle, fenêtre, lignes de titre…), déclenchées par IntersectionObserver.
 - **Séquences liées au défilement** : attribut `data-progress` → variable CSS `--p` (scène matcha épinglée, fenêtre sur la salle, mots révélés, table qui tourne…). Un seul écouteur de défilement passif.
-- **Téléphones et tablettes** : barre d'actions sous le pouce (menu, carte, itinéraire) qui apparaît après le haut de page et s'efface au pied de page ; marges des encoches (`safe-area`) ; effets de survol réservés aux souris ; retour tactile immédiat.
+- **Téléphones et tablettes** : barre d'actions toujours visible sous le pouce, sur toutes les pages (Itinéraire à gauche, La carte à droite ; Nos favoris sur la page de la carte), y compris sur tablette à l'horizontale (écran tactile) ; marges des encoches (`safe-area`) ; effets de survol réservés aux souris ; retour tactile immédiat.
 - **Souris** (ordinateur uniquement) : parallaxe du hero (`data-pointer`), boutons magnétiques (`data-magnetic`), curseur « Glisser » sur le rail des signatures.
 - **Transition de page** : couleur de la page d'arrivée + logo complet centré, ≈ 0,5 s ; aucune attente artificielle.
 - `prefers-reduced-motion` : aucune animation, aucun contenu masqué, navigation instantanée.

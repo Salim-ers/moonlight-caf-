@@ -66,6 +66,7 @@ export const fr = {
     home: "Moonlight Café, accueil",
     newTab: "(s'ouvre dans un nouvel onglet)",
     language: "Langue",
+    quickActions: "Actions rapides",
   },
   nav: {
     home: "Accueil",

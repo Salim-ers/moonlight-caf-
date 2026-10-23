@@ -59,13 +59,6 @@ export function Header({ locale }: { locale: Locale }) {
     document.documentElement.style.setProperty("--sticky-top", hidden ? "0.75rem" : "var(--header-h)");
   }, [hidden]);
 
-  // La barre d'actions mobile peut ouvrir le menu (l'en-tête est masqué pendant la descente)
-  useEffect(() => {
-    const openMenu = () => setOpen(true);
-    window.addEventListener("ml:open-menu", openMenu);
-    return () => window.removeEventListener("ml:open-menu", openMenu);
-  }, []);
-
   const close = useCallback(() => {
     setOpen(false);
     toggle.current?.focus();
