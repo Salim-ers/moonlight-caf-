@@ -6,7 +6,8 @@ import { href, type Locale } from "@/i18n/config";
 
 /**
  * SCÈNE 07 — The Moonlight feeling. Sur grand écran, une fenêtre arrondie s'ouvre pendant le
- * défilement jusqu'à montrer toute la salle ; le texte passe alors en clair sur la photo.
+ * défilement jusqu'à montrer toute la salle en plein écran (photo en 3840 px) ; le texte passe alors
+ * en clair sur la photo.
  * Mobile / animations réduites : photo et texte empilés.
  */
 export function Feeling({ locale }: { locale: Locale }) {
@@ -18,7 +19,7 @@ export function Feeling({ locale }: { locale: Locale }) {
           <Reveal variant="window" className="feel-window">
             <div className="zoom absolute inset-0">
               <div className="feel-img">
-                <Photo id="p07" locale={locale} sizes="(min-width: 640px) 112vw, 204vw" />
+                <Photo id="p22" locale={locale} sizes="(min-width: 640px) 112vw, 124vw" />
               </div>
             </div>
             <div aria-hidden="true" className="feel-scrim" />

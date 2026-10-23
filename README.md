@@ -108,7 +108,7 @@ La numérotation suit l'ordre du ZIP original `Moonlight  café.zip` (vérifié 
 
 Remplacer une photo : déposez le fichier dans `src/assets/photos/`, mettez à jour l'import et l'entrée du registre, puis lancez `npm run images`.
 
-**Versions web pré-générées** : `npm run images` produit, pour chaque photo, AVIF + WebP en 6 largeurs (480 → 1672 px) et un JPEG de secours dans `public/img/` (noms versionnés, cache d'un an). Le site n'utilise **aucune optimisation d'image à la volée** : pas de première visite lente, pas de quota d'hébergeur, pas d'échec de génération. Le build échoue si une photo a changé sans que ses versions web aient été régénérées.
+**Versions web pré-générées** : `npm run images` produit, pour chaque photo, AVIF + WebP de 480 px jusqu'à la définition de la photo (1672 px en général, 3840 px pour les deux vues de la salle agrandies pour le plein écran) et un JPEG de secours dans `public/img/` (noms versionnés, cache d'un an). Le site n'utilise **aucune optimisation d'image à la volée** : pas de première visite lente, pas de quota d'hébergeur, pas d'échec de génération. Le build échoue si une photo a changé sans que ses versions web aient été régénérées.
 
 ## 6. Logo
 

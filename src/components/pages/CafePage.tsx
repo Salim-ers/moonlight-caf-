@@ -10,7 +10,7 @@ import { getDictionary } from "@/i18n";
 import { href, type Locale } from "@/i18n/config";
 
 /** Les six photographies réservées à cette page, dans l'ordre de lecture (et de la visionneuse). */
-const PHOTOS = ["p22", "p04", "p24", "p01", "p17", "p26"] as const satisfies readonly PhotoId[];
+const PHOTOS = ["p07", "p04", "p24", "p01", "p17", "p26"] as const satisfies readonly PhotoId[];
 
 function Shot({
   i,
@@ -89,7 +89,7 @@ export function CafePage({ locale }: { locale: Locale }) {
             locale={locale}
             variant="enter"
             preload
-            sizes="(min-width: 640px) 100vw, 204vw"
+            sizes="(min-width: 640px) 100vw, 124vw"
             className="mx-auto aspect-[4/3] max-w-[84rem] sm:aspect-[16/9] lg:aspect-[21/9]"
             radius="2rem"
           />
@@ -131,7 +131,7 @@ export function CafePage({ locale }: { locale: Locale }) {
             i={2}
             locale={locale}
             variant="window"
-            sizes="(min-width: 640px) 100vw, 204vw"
+            sizes="(min-width: 640px) 100vw, 124vw"
             className="mx-auto mt-12 aspect-[4/3] max-w-[80rem] sm:aspect-[16/9]"
           />
         </div>

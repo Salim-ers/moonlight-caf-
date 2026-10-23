@@ -10,6 +10,8 @@
  * Numérotation = ordre des 26 images du ZIP original « Moonlight  café.zip »
  * (vérifiée par empreinte MD5 : 01 = « …13_51_33-1.png » … 26 = « …13_59_12-10.png »).
  * 27 = photo de l'Iced Mango Matcha Latte, envoyée séparément le 23 octobre 2026.
+ * 07 et 22 (salle, affichées en très grand) : agrandies ×4 par IA (Real-ESRGAN x4plus) puis
+ * ramenées à 3840 px, pour rester nettes en plein écran et sur les écrans 4K.
  *
  * Pour remplacer une photo : déposez le fichier dans `src/assets/photos/`, modifiez l'import
  * et l'entrée correspondante. Lancez ensuite `npm run images` (AVIF/WebP/JPEG, toutes tailles).
@@ -171,9 +173,9 @@ export const photoManifest = {
     source: "Image ChatGPT 22 oct. 2026, 13_51_36-7.png",
     file: "07-salle-bancs-bois.jpg",
     src: p07,
-    page: "home",
-    section: "Accueil — Scène 07 The Moonlight feeling",
-    usedIn: "src/components/home/Feeling.tsx",
+    page: "cafe",
+    section: "Le café — En-tête",
+    usedIn: "src/components/pages/CafePage.tsx",
     description: "La salle : banquettes, tabourets et tables rondes en bois clair.",
     alt: {
       fr: "La salle du café : longues banquettes, tabourets et tables rondes en bois clair sous des pans de lin",
@@ -411,9 +413,9 @@ export const photoManifest = {
     source: "Image ChatGPT 22 oct. 2026, 13_59_08-6.png",
     file: "22-salle-vue-large.jpg",
     src: p22,
-    page: "cafe",
-    section: "Le café — En-tête",
-    usedIn: "src/components/pages/CafePage.tsx",
+    page: "home",
+    section: "Accueil — Scène 07 The Moonlight feeling (plein écran)",
+    usedIn: "src/components/home/Feeling.tsx",
     description: "Vue large de la salle : lin suspendu, tables rondes, tabourets.",
     alt: {
       fr: "Vue large de la salle : pans de lin suspendus, tables rondes, banquettes et tabourets en bois",

@@ -42,7 +42,7 @@ Les mentions légales affichent « [À compléter] » et un bandeau « Document 
 
 ## E. Photographies
 
-19. Les 26 premières photos ont été fournies en 1672 × 941 px sous des noms « Image ChatGPT… » (la 27e, 1086 × 1448 px, à part) : faire confirmer qu'elles représentent fidèlement le lieu et les produits, et que le café en détient les droits. Des originaux plus grands amélioreraient la netteté sur grands écrans.
+19. Les 26 premières photos ont été fournies en 1672 × 941 px sous des noms « Image ChatGPT… » (la 27e, 1086 × 1448 px, à part) : faire confirmer qu'elles représentent fidèlement le lieu et les produits, et que le café en détient les droits. Des originaux plus grands amélioreraient la netteté sur grands écrans (les photos 07 et 22, affichées en très grand, ont été agrandies par IA en 3840 px en attendant).
 
 ## F. Mise en ligne
 

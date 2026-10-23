@@ -93,19 +93,22 @@ export const photoVariants: Record<string, PhotoVariant> = {
     "color": "#080808"
   },
   "07-salle-bancs-bois.jpg": {
-    "base": "/img/07-salle-bancs-bois.9aa2d8cb",
-    "hash": "9aa2d8cb",
+    "base": "/img/07-salle-bancs-bois.8f203ad8",
+    "hash": "8f203ad8",
     "widths": [
       480,
       640,
       828,
       1080,
       1440,
-      1672
+      1672,
+      1920,
+      2560,
+      3840
     ],
-    "width": 1672,
-    "height": 941,
-    "color": "#d8c8b8"
+    "width": 3840,
+    "height": 2161,
+    "color": "#d8d8c8"
   },
   "08-facade-comptoir.jpg": {
     "base": "/img/08-facade-comptoir.85d90138",
@@ -318,18 +321,21 @@ export const photoVariants: Record<string, PhotoVariant> = {
     "color": "#d8c8c8"
   },
   "22-salle-vue-large.jpg": {
-    "base": "/img/22-salle-vue-large.59592ed9",
-    "hash": "59592ed9",
+    "base": "/img/22-salle-vue-large.e8da855b",
+    "hash": "e8da855b",
     "widths": [
       480,
       640,
       828,
       1080,
       1440,
-      1672
+      1672,
+      1920,
+      2560,
+      3840
     ],
-    "width": 1672,
-    "height": 941,
+    "width": 3840,
+    "height": 2161,
     "color": "#d8d8c8"
   },
   "23-facade-gobelet-moonlight.jpg": {

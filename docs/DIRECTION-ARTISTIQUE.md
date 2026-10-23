@@ -46,7 +46,7 @@ Toujours le logo officiel **complet** (jeune femme, tasse, vapeur, lettrage « M
 Pas de numérotations décoratives (« 01 / 06 »), de pastilles de couleur devant les libellés, d'étiquettes « fig. », d'étoiles ou d'indicateur « défiler » : ces tics de gabarit diluent l'identité. La couleur vient des aplats, des photos et des mots en italique.
 
 ## Photographie et netteté
-Les photos fournies mesurent 1672 × 941 px : aucun cadrage n'est affiché au-delà de cette définition (arche, cercles, fenêtres plafonnés), compression AVIF qualité 75–85, zooms d'animation limités à 6 %.
+Les photos fournies mesurent 1672 × 941 px : aucun cadrage n'est affiché au-delà de cette définition (arche, cercles, fenêtres plafonnés), zooms d'animation limités à 6 %. Exception : les deux vues de la salle (07, en-tête du Café ; 22, « On s'y pose » en plein écran) ont été agrandies ×4 par IA (Real-ESRGAN) puis ramenées à 3840 px, nettes jusqu'aux écrans 4K.
 
 ## Langage de mouvement
 Transform, opacity et clip-path uniquement ; easing « expo out » pour les entrées, « in-out » pour les masques. Révélations variées (rideau vertical, horizontal, cercle, fenêtre, arche, pop), jamais la même sur toutes les photos. Rien ne bloque la lecture ni le clic ; tout est désactivé avec « réduire les animations ».

@@ -1,6 +1,6 @@
 /**
  * Génère, une fois pour toutes, les versions web des photographies :
- * AVIF + WebP en 6 largeurs, et un JPEG de secours pour les navigateurs anciens.
+ * AVIF + WebP de 480 à 3840 px (selon la définition de la photo), et un JPEG de secours pour les navigateurs anciens.
  * Les fichiers sont servis tels quels par le CDN (aucune optimisation « à la volée » :
  * pas de première visite lente, pas de quota, pas d'échec de génération).
  *
@@ -17,7 +17,8 @@ const root = path.resolve(import.meta.dirname, "..");
 const SRC = path.join(root, "src/assets/photos");
 const OUT = path.join(root, "public/img");
 const TABLE = path.join(root, "src/data/photo-variants.generated.ts");
-const WIDTHS = [480, 640, 828, 1080, 1440, 1672];
+// Au-delà de 1920 px (plein écran, écrans 4K), compression plus douce : le grain du bois et du lin reste net.
+const WIDTHS = [480, 640, 828, 1080, 1440, 1672, 1920, 2560, 3840];
 
 fs.mkdirSync(OUT, { recursive: true });
 const files = fs
@@ -43,11 +44,11 @@ for (const file of files) {
     const webp = `${base}-${w}.webp`;
     keep.add(avif).add(webp);
     if (!fs.existsSync(path.join(OUT, avif))) {
-      await sharp(buf).resize({ width: w }).avif({ quality: 60, effort: 5 }).toFile(path.join(OUT, avif));
+      await sharp(buf).resize({ width: w }).avif({ quality: w >= 1920 ? 72 : 60, effort: 5 }).toFile(path.join(OUT, avif));
       made++;
     }
     if (!fs.existsSync(path.join(OUT, webp))) {
-      await sharp(buf).resize({ width: w }).webp({ quality: 80, effort: 5 }).toFile(path.join(OUT, webp));
+      await sharp(buf).resize({ width: w }).webp({ quality: w >= 1920 ? 88 : 80, effort: 5 }).toFile(path.join(OUT, webp));
       made++;
     }
   }
