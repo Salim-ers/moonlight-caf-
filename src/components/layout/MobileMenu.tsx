@@ -25,6 +25,7 @@ export function MobileMenu({ open, onClose, locale }: { open: boolean; onClose: 
     if (!open) return;
     targets.forEach((el) => el?.setAttribute("inert", ""));
     document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
     const first = setTimeout(() => ref.current?.querySelector<HTMLElement>("a")?.focus(), 120);
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -37,6 +38,7 @@ export function MobileMenu({ open, onClose, locale }: { open: boolean; onClose: 
       clearTimeout(first);
       targets.forEach((el) => el?.removeAttribute("inert"));
       document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
       mq.removeEventListener("change", onWide);
     };

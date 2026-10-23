@@ -2,7 +2,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { Expand } from "lucide-react";
 import { Lines, Reveal, type RevealVariant } from "@/components/motion/Reveal";
 import { PageHead } from "@/components/ui/PageHead";
-import { Photo } from "@/components/ui/Photo";
+import { Photo, photoSources } from "@/components/ui/Photo";
 import { ButtonLink } from "@/components/ui/ButtonLink";
 import { LightboxProvider, LightboxTrigger } from "@/components/gallery/Lightbox";
 import { photoManifest, type PhotoId } from "@/data/photo-manifest";
@@ -38,7 +38,7 @@ function Shot({
         locale={locale}
         sizes={sizes}
         preload={preload}
-        quality={preload ? 85 : 75}
+       
         className="transition-transform duration-[1200ms] ease-[var(--ease-out)] group-hover:scale-[1.04]"
       />
     </div>
@@ -75,7 +75,10 @@ function Shot({
 export function CafePage({ locale }: { locale: Locale }) {
   const t = getDictionary(locale);
   const c = t.cafePage;
-  const items = PHOTOS.map((id) => ({ src: photoManifest[id].src, alt: photoManifest[id].alt[locale] }));
+  const items = PHOTOS.map((id) => {
+    const s = photoSources(photoManifest[id].file);
+    return { avif: s.avif, webp: s.webp, jpg: s.jpg, width: s.width, height: s.height, alt: photoManifest[id].alt[locale] };
+  });
   return (
     <LightboxProvider items={items} labels={c.gallery}>
       <PageHead tone="lavender" title={c.title} tagline={c.tagline} lede={c.lede} />

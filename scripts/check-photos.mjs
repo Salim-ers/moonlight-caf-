@@ -111,6 +111,31 @@ try {
   perceptual = `non vérifié (${e.message})`;
 }
 
+// 4. Versions web à jour (npm run images) : une entrée par photo, empreinte identique au fichier source
+const variantsSrc = fs.readFileSync(path.join(root, "src/data/photo-variants.generated.ts"), "utf8");
+const variants = JSON.parse(
+  variantsSrc
+    .slice(variantsSrc.lastIndexOf("= {") + 2)
+    .trim()
+    .replace(/;\s*$/, ""),
+);
+for (const f of files) {
+  const h = crypto
+    .createHash("md5")
+    .update(fs.readFileSync(path.join(PHOTOS_DIR, f)))
+    .digest("hex")
+    .slice(0, 8);
+  const v = variants[f];
+  if (!v) errors.push(`${f} : versions web absentes — lancez « npm run images ».`);
+  else if (v.hash !== h) errors.push(`${f} : versions web périmées (photo modifiée) — lancez « npm run images ».`);
+  else if (
+    !fs.existsSync(path.join(root, "public", `${v.base}.jpg`)) ||
+    !v.widths.every((w) => fs.existsSync(path.join(root, "public", `${v.base}-${w}.avif`)))
+  )
+    errors.push(`${f} : fichiers de public/img manquants — lancez « npm run images ».`);
+}
+console.log(`Versions web : ${Object.keys(variants).length} photos à jour dans public/img`);
+
 // Rapport
 const byPage = {};
 for (const e of entries) (byPage[e.page] ??= []).push(e);

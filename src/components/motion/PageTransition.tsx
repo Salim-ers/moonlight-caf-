@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createContext, useCallback, useContext, useEffect, useRef, type ComponentProps } from "react";
-import { routeKeyFromPath } from "@/i18n/config";
+import { localeFromPath, routeKeyFromPath, routes, type RouteKey } from "@/i18n/config";
 import { pageTone, tones } from "@/lib/tones";
 
 type Ctx = { navigate: (href: string) => void };
@@ -47,6 +47,24 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
     arrived.current?.();
     arrived.current = null;
   }, [pathname]);
+
+  // Dès le premier geste, pendant un temps mort, précharge les six pages principales : chaque changement de page
+  // est ensuite instantané, y compris depuis le menu mobile (dont les liens sont hors écran).
+  useEffect(() => {
+    const locale = localeFromPath(window.location.pathname);
+    const keys: RouteKey[] = ["home", "menu", "favorites", "cafe", "story", "visit"];
+    const run = () => keys.forEach((k) => router.prefetch(routes[k][locale]));
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+    const events = ["scroll", "pointerdown", "touchstart", "keydown"] as const;
+    // déclenché au premier geste du visiteur (jamais pendant le chargement de la page)
+    const start = () => {
+      events.forEach((e) => window.removeEventListener(e, start));
+      if (w.requestIdleCallback) w.requestIdleCallback(run, { timeout: 2000 });
+      else setTimeout(run, 300);
+    };
+    events.forEach((e) => window.addEventListener(e, start, { once: true, passive: true }));
+    return () => events.forEach((e) => window.removeEventListener(e, start));
+  }, [router]);
 
   const navigate = useCallback(
     async (href: string) => {
@@ -107,7 +125,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
     <TransitionContext.Provider value={{ navigate }}>
       {children}
       <div ref={overlay} className="pt" data-state="idle" data-transition-overlay aria-hidden="true">
-        <Image src="/brand/moonlight-logo.webp" alt="" width={900} height={637} unoptimized className="pt-logo" />
+        <Image src="/brand/moonlight-logo.webp" alt="" width={900} height={637} unoptimized loading="eager" className="pt-logo" />
       </div>
     </TransitionContext.Provider>
   );

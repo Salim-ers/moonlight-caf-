@@ -43,7 +43,7 @@ export function MenuNav({ cats, label, printLabel }: { cats: Cat[]; label: strin
         <nav aria-label={label} className="min-w-0 flex-1">
           <ul
             ref={bar}
-            className="no-scrollbar relative flex gap-1 overflow-x-auto rounded-full bg-ivory/90 p-1.5 shadow-[0_8px_30px_-16px_rgb(39_36_32/0.45)] backdrop-blur-md"
+            className="no-scrollbar relative flex gap-1 overflow-x-auto rounded-full bg-ivory/95 p-1.5 shadow-[0_8px_30px_-16px_rgb(39_36_32/0.45)] lg:backdrop-blur-md"
           >
             <span
               ref={pill}

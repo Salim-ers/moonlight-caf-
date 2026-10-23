@@ -1,11 +1,10 @@
 "use client";
 
-import Image, { type StaticImageData } from "next/image";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
-export type LightboxItem = { src: StaticImageData; alt: string };
+export type LightboxItem = { avif: string; webp: string; jpg: string; width: number; height: number; alt: string };
 type Labels = { open: string; close: string; prev: string; next: string; counter: string };
 
 const Ctx = createContext<{ open: (i: number) => void; labels: Labels; items: LightboxItem[] } | null>(null);
@@ -29,6 +28,7 @@ export function LightboxProvider({ items, labels, children }: { items: LightboxI
     if (!isOpen) return;
     const node = dialog.current!;
     document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
     node.querySelector<HTMLElement>("[data-close]")?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") close();
@@ -51,6 +51,7 @@ export function LightboxProvider({ items, labels, children }: { items: LightboxI
     return () => {
       window.removeEventListener("keydown", onKey);
       document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
       opener.current?.focus();
     };
   }, [isOpen, close, go]);
@@ -91,7 +92,19 @@ export function LightboxProvider({ items, labels, children }: { items: LightboxI
               </div>
               <div className="relative flex-1" onClick={close}>
                 <div key={index} className="lightbox-img absolute inset-x-[var(--gutter)] inset-y-2 md:inset-x-24">
-                  <Image src={p.src} alt={p.alt} fill sizes="100vw" quality={85} className="object-contain" onClick={(e) => e.stopPropagation()} />
+                  <picture>
+                    <source type="image/avif" srcSet={p.avif} sizes="100vw" />
+                    <source type="image/webp" srcSet={p.webp} sizes="100vw" />
+                    <img
+                      src={p.jpg}
+                      alt={p.alt}
+                      width={p.width}
+                      height={p.height}
+                      decoding="async"
+                      className="absolute inset-0 h-full w-full object-contain"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </picture>
                 </div>
               </div>
               <div className="wrap flex min-h-24 items-center justify-between gap-6 py-4">

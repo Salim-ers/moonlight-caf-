@@ -16,13 +16,17 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  // Les photos sont pré-générées (npm run images → public/img) : aucune optimisation à la volée,
+  // donc ni première visite lente, ni quota, ni échec de génération côté hébergeur.
   images: {
-    formats: ["image/avif", "image/webp"],
-    // Photos fournies en 1672 × 941 : aucune taille supérieure n'est générée (pas d'agrandissement artificiel).
-    qualities: [75, 85],
-    deviceSizes: [480, 640, 828, 1080, 1280, 1672],
-    imageSizes: [160, 256, 384],
-    minimumCacheTTL: 2678400,
+    unoptimized: true,
+  },
+  async headers() {
+    return [
+      // noms de fichiers versionnés (empreinte) : mis en cache un an par le navigateur et le CDN
+      { source: "/img/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
+      { source: "/brand/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=604800, stale-while-revalidate=86400" }] },
+    ];
   },
 };
 

@@ -75,7 +75,7 @@ export function Hero({ locale }: { locale: Locale }) {
             <div className="hero-ptr" style={{ "--depth": -12 } as CSSProperties}>
               <figure className="hero-arch enter-rise" style={{ "--d": "0.06s" } as CSSProperties}>
                 <div className="zoom absolute inset-0">
-                  <Photo id="p06" locale={locale} preload quality={85} sizes="(min-width: 1024px) 80vw, 175vw" />
+                  <Photo id="p06" locale={locale} preload sizes="(min-width: 1024px) 80vw, 175vw" />
                 </div>
               </figure>
             </div>
@@ -84,7 +84,7 @@ export function Hero({ locale }: { locale: Locale }) {
           <div className="hero-layer hero-layer--medal">
             <div className="hero-ptr" style={{ "--depth": 22 } as CSSProperties}>
               <figure className="hero-medal enter-pop" style={{ "--d": "0.32s" } as CSSProperties}>
-                <Photo id="p02" locale={locale} quality={85} sizes="(min-width: 1024px) 26vw, 66vw" />
+                <Photo id="p02" locale={locale} sizes="(min-width: 1024px) 26vw, 66vw" />
               </figure>
             </div>
           </div>

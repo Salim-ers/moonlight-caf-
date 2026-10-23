@@ -35,7 +35,7 @@ export function MenuPage({ locale }: { locale: Locale }) {
           <div data-progress="out" className="menu-hero">
             <div className="menu-hero-disc enter-rise" style={{ "--d": "0.1s" } as CSSProperties}>
               <div className="menu-hero-spin">
-                <Photo id="p13" locale={locale} preload quality={85} sizes="(min-width: 1024px) 50vw, 130vw" />
+                <Photo id="p13" locale={locale} preload sizes="(min-width: 1024px) 50vw, 130vw" />
               </div>
             </div>
           </div>
@@ -46,7 +46,7 @@ export function MenuPage({ locale }: { locale: Locale }) {
         <MenuNav cats={menu.map((c) => ({ id: c.id, title: c.title[locale], dot: tones[c.tone].dot }))} label={m.categoriesLabel} printLabel={m.print} />
 
         <div className="print-only mb-6">
-          <Logo className="h-24 w-auto" />
+          <Logo eager className="h-24 w-auto" />
           <p className="mt-2">
             {siteConfig.name} — {fullAddress}
           </p>

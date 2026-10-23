@@ -3,10 +3,18 @@
  * Usage : npm run build && npm run start, puis :
  *   CHROME_PATH="C:/Program Files/Google/Chrome/Application/chrome.exe" node scripts/qa.mjs http://localhost:3000
  */
-import { chromium } from "playwright-core";
+import { chromium, firefox, webkit } from "playwright-core";
 
 const BASE = process.argv[2] ?? "http://localhost:3000";
-const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH });
+// BROWSER=webkit (moteur de Safari) ou BROWSER=firefox ; par défaut Chrome (CHROME_PATH)
+const ENGINE = process.env.BROWSER ?? "chromium";
+const browser =
+  ENGINE === "webkit"
+    ? await webkit.launch()
+    : ENGINE === "firefox"
+      ? await firefox.launch()
+      : await chromium.launch({ executablePath: process.env.CHROME_PATH });
+console.log(`Moteur : ${ENGINE} ${browser.version()}`);
 const results = [];
 const ok = (name, pass, info = "") => results.push([pass ? "PASS" : "FAIL", name, info]);
 const errors = [];
@@ -15,7 +23,10 @@ async function newPage(opts = {}, { boot = false } = {}) {
   const p = await ctx.newPage();
   // le logo d'ouverture ne joue qu'une fois par visite : on le neutralise sauf pour son propre test
   if (!boot) await p.addInitScript(() => sessionStorage.setItem("ml-boot", "1"));
-  p.on("pageerror", (e) => errors.push(`${p.url()} pageerror ${e.message}`));
+  // WebKit signale comme « access control » un préchargement interrompu quand le robot quitte la page aussitôt
+  p.on("pageerror", (e) => {
+    if (!/_rsc=.*access control checks/.test(e.message)) errors.push(`${p.url()} pageerror ${e.message}`);
+  });
   p.on("console", (m) => {
     if (m.type() === "error" && !/google|maps|gstatic|ERR_|net::|404/.test(m.text())) errors.push(`${p.url()} console ${m.text().slice(0, 200)}`);
   });
@@ -69,8 +80,10 @@ for (const r of routes) {
       await new Promise((r) => setTimeout(r, 40));
     }
     await new Promise((r) => setTimeout(r, 600));
+    // toutes les photos doivent finir de charger (jusqu'à 8 s)
+    for (let t = 0; t < 40 && [...document.images].some((i) => !i.complete); t++) await new Promise((r) => setTimeout(r, 200));
     const imgs = [...document.images];
-    const photos = [...new Set(imgs.map((i) => decodeURIComponent(i.currentSrc || i.src).match(/media\/(\d\d-[a-z0-9-]+)\./)?.[1]).filter(Boolean))];
+    const photos = [...new Set(imgs.map((i) => decodeURIComponent(i.currentSrc || i.src).match(/\/img\/(\d\d-[a-z0-9-]+)\./)?.[1]).filter(Boolean))];
     return {
       lang: document.documentElement.lang,
       h1: document.querySelectorAll("h1").length,
@@ -79,7 +92,7 @@ for (const r of routes) {
       og: !!document.querySelector('meta[property="og:image"]'),
       jsonld: !!document.querySelector('script[type="application/ld+json"]'),
       noAlt: imgs.filter((i) => !i.hasAttribute("alt")).length,
-      broken: imgs.filter((i) => i.complete && i.naturalWidth === 0).length,
+      broken: imgs.filter((i) => !i.complete || i.naturalWidth === 0).length,
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
       cjk: /[\u3040-\u30ff\u3400-\u9fff]/.test(document.body.innerText),
       asianRefs: /japonais|coréen|chinois|japanese|korean|chinese/i.test(document.body.innerText),
@@ -139,9 +152,9 @@ ok(
 
 // 3. 404
 for (const r of ["/inexistant", "/en/nothing"]) {
-  const res = await page.goto(BASE + r);
+  const res = await page.goto(BASE + r, { waitUntil: "networkidle" });
   const lang = await page.evaluate(() => document.documentElement.lang);
-  ok(`404 ${r}`, res.status() === 404 && lang === (r.startsWith("/en") ? "en" : "fr"));
+  ok(`404 ${r}`, res?.status() === 404 && lang === (r.startsWith("/en") ? "en" : "fr"), `status=${res?.status()} lang=${lang}`);
 }
 
 // 4. Transition de page : logo officiel complet, centré, non recadré, rapide
@@ -236,7 +249,7 @@ for (const r of ["/inexistant", "/en/nothing"]) {
     extras: document.querySelectorAll("#extras-title ~ ul li, [aria-labelledby=extras-title] ul li").length,
     strawberry: [...document.querySelectorAll(".menu-item")].find((li) => li.textContent.includes("Iced Strawberry"))?.textContent.includes("6,80"),
     deepLink: Math.abs(document.getElementById("patisseries").getBoundingClientRect().top) < 200,
-    photos: document.querySelectorAll('main img[src*="_next/image"]').length,
+    photos: document.querySelectorAll('main img[src*="/img/"]').length,
   }));
   ok(
     "carte : 6 catégories, 33 produits, 5 suppléments, prix exacts, lien profond",
@@ -332,8 +345,19 @@ for (const r of ["/inexistant", "/en/nothing"]) {
 {
   const p = await newPage();
   await p.goto(BASE + "/", { waitUntil: "networkidle" });
-  await p.keyboard.press("Tab");
-  ok("clavier : lien d'évitement en premier", (await p.evaluate(() => document.activeElement?.getAttribute("href"))) === "#main");
+  if (ENGINE === "webkit") {
+    // Safari, par défaut, ne parcourt au Tab que les boutons (réglage « Tab parcourt chaque élément » désactivé) :
+    // on vérifie donc que le lien d'évitement est le premier lien du document et qu'il reçoit bien le focus.
+    const d = await p.evaluate(() => {
+      const first = document.querySelector("a[href]");
+      first?.focus();
+      return { first: first?.getAttribute("href"), focused: document.activeElement === first };
+    });
+    ok("clavier : lien d'évitement en premier (Safari)", d.first === "#main" && d.focused, JSON.stringify(d));
+  } else {
+    await p.keyboard.press("Tab");
+    ok("clavier : lien d'évitement en premier", (await p.evaluate(() => document.activeElement?.getAttribute("href"))) === "#main");
+  }
 }
 
 ok("aucune erreur JavaScript", errors.length === 0, errors.slice(0, 5).join(" | "));

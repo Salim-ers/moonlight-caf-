@@ -25,7 +25,8 @@ Contrôles qualité :
 ```bash
 npm run typecheck     # TypeScript strict
 npm run lint          # ESLint (règles Next.js + React Hooks)
-npm run check:photos  # audit anti-doublon des 26 photographies
+npm run check:photos  # audit anti-doublon des 26 photographies + versions web à jour
+npm run images        # régénère les versions web des photos (après remplacement/ajout)
 npm run check         # typecheck + lint + build
 npm run qa            # recette fonctionnelle (serveur lancé, voir docs/VERIFICATION.md)
 ```
@@ -105,7 +106,9 @@ La numérotation suit l'ordre du ZIP original `Moonlight  café.zip` (vérifié 
 - un fichier est identique à un autre (MD5) ou quasi identique (hachage perceptuel dHash) ;
 - une photo est importée directement sans passer par le registre.
 
-Remplacer une photo : déposez le fichier dans `src/assets/photos/`, mettez à jour l'import et l'entrée du registre.
+Remplacer une photo : déposez le fichier dans `src/assets/photos/`, mettez à jour l'import et l'entrée du registre, puis lancez `npm run images`.
+
+**Versions web pré-générées** : `npm run images` produit, pour chaque photo, AVIF + WebP en 6 largeurs (480 → 1672 px) et un JPEG de secours dans `public/img/` (noms versionnés, cache d'un an). Le site n'utilise **aucune optimisation d'image à la volée** : pas de première visite lente, pas de quota d'hébergeur, pas d'échec de génération. Le build échoue si une photo a changé sans que ses versions web aient été régénérées.
 
 ## 6. Logo
 
@@ -119,6 +122,7 @@ Le fichier original (`assets/originals/logo-moonlight-cafe-original.png`, identi
 - **Entrées au chargement** (hero, en-têtes) : CSS pur, ≤ 0,9 s, synchronisées avec la levée du voile.
 - **Révélations au défilement** : attribut `data-reveal` (rideaux, cercle, fenêtre, lignes de titre…), déclenchées par IntersectionObserver.
 - **Séquences liées au défilement** : attribut `data-progress` → variable CSS `--p` (scène matcha épinglée, fenêtre sur la salle, mots révélés, table qui tourne…). Un seul écouteur de défilement passif.
+- **Téléphones et tablettes** : barre d'actions sous le pouce (menu, carte, itinéraire) qui apparaît après le haut de page et s'efface au pied de page ; marges des encoches (`safe-area`) ; effets de survol réservés aux souris ; retour tactile immédiat.
 - **Souris** (ordinateur uniquement) : parallaxe du hero (`data-pointer`), boutons magnétiques (`data-magnetic`), curseur « Glisser » sur le rail des signatures.
 - **Transition de page** : couleur de la page d'arrivée + logo complet centré, ≈ 0,5 s ; aucune attente artificielle.
 - `prefers-reduced-motion` : aucune animation, aucun contenu masqué, navigation instantanée.

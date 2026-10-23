@@ -10,11 +10,14 @@ export function Logo({
   className = "",
   light = false,
   preload = false,
+  eager = false,
   alt = "Moonlight café",
 }: {
   className?: string;
   light?: boolean;
   preload?: boolean;
+  /** Chargé tout de suite même s'il est caché (impression) : Safari ne charge pas une image différée invisible. */
+  eager?: boolean;
   alt?: string;
 }) {
   return (
@@ -25,6 +28,7 @@ export function Logo({
       height={637}
       unoptimized
       preload={preload}
+      loading={preload ? undefined : eager ? "eager" : "lazy"}
       className={`object-contain ${light ? "logo-light" : ""} ${className}`}
     />
   );

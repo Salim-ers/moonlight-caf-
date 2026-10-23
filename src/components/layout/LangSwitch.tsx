@@ -19,7 +19,7 @@ export function LangSwitch({ locale, className = "", long = false }: { locale: L
       hrefLang={other}
       lang={other}
       className={`font-semibold ${className}`}
-      aria-label={`${t.a11y.language} : ${t.common.switchTo}`}
+      aria-label={long ? undefined : `${t.common.switchToShort} – ${t.common.switchTo}`}
     >
       {long ? t.common.switchTo : t.common.switchToShort}
     </a>

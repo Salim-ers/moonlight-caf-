@@ -49,7 +49,7 @@ export function FavoritesPage({ locale }: { locale: Locale }) {
             style={{ "--d": "0.08s" } as CSSProperties}
           >
             <div className="zoom absolute inset-0">
-              <Photo id="p15" locale={locale} preload quality={85} sizes="(min-width: 1024px) 56vw, 132vw" />
+              <Photo id="p15" locale={locale} preload sizes="(min-width: 1024px) 56vw, 132vw" />
             </div>
           </div>
         }

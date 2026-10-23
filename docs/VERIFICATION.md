@@ -38,6 +38,20 @@ Tout ce qui figure ici a été **réellement exécuté**. Les scripts sont fourn
 | Clavier | lien d'évitement en premier | OK |
 | Console | aucune erreur JavaScript | OK |
 
+## 2 bis. Navigateurs (moteurs réels via Playwright)
+
+La recette complète (39 contrôles) passe sur les trois moteurs du marché :
+
+| Moteur | Navigateurs concernés | Résultat |
+|---|---|---|
+| Chromium 156 | Chrome, Edge, Opera, Samsung Internet, navigateurs Android | 39/39 |
+| WebKit 27.2 | Safari (Mac, iPhone, iPad) et tous les navigateurs iOS | 39/39 |
+| Firefox 157 | Firefox | 39/39 |
+
+Particularités vérifiées : bascule AVIF → WebP → JPEG selon le navigateur ; sous Safari, la touche Tab ne parcourt par défaut que les boutons (réglage du système), le lien d'évitement reste accessible.
+
+Appareils émulés sous WebKit (iPhone SE, iPhone 15, iPhone 15 Pro Max en paysage, iPad Mini) : aucun débordement, aucun titre coupé, cibles tactiles ≥ 24 px.
+
 ## 3. Responsive
 
 Pages FR et EN (13) × largeurs 320, 375, 390, 430, 768, 1024, 1440, 1920 px : **aucun débordement horizontal, aucune image déformée, aucune image cassée, aucun titre coupé** (après correction de deux titres trop larges sur la carte et l'accueil). Revue visuelle des captures défilées à 390, 768 et 1440 px.
@@ -51,6 +65,22 @@ Pages FR et EN (13) × largeurs 320, 375, 390, 430, 768, 1024, 1440, 1920 px : *
 | Changement de page utilisable (voile retiré), 6 navigations | 1,56 – 1,63 s | 0,49 – 0,51 s |
 
 ## 5. Lighthouse (médiane de 3 passages par page)
+
+### 5.0 Version livrée (23 octobre 2026) — mobile, étranglement appliqué (4G lente, processeur ×4)
+
+| Page | Performance | Accessibilité | FCP | LCP | TBT | CLS |
+|---|---|---|---|---|---|---|
+| / | 94 | 100 | 1,28 s | 2,27 s | 222 ms | 0,016 |
+| /la-carte | 97 | 100 | 1,15 s | 2,09 s | 161 ms | 0 |
+| /nos-favoris | 98 | 100 | 1,07 s | 2,21 s | 99 ms | 0 |
+| /le-cafe | 98 | 100 | 1,00 s | 2,31 s | 66 ms | 0 |
+| /notre-histoire | 99 | 100 | 1,02 s | 1,93 s | 72 ms | 0,030 |
+| /nous-trouver | 99 | 100 | 1,04 s | 1,93 s | 92 ms | 0,029 |
+| /en | 95 | 100 | 1,25 s | 2,32 s | 193 ms | 0,016 |
+
+Desktop : performance 99–100 et accessibilité 100 sur les 7 pages. Bonnes pratiques et SEO : 100 partout.
+Fluidité du défilement (téléphone simulé, processeur ×4) : 0 % d'images au-delà de 33 ms.
+Les tableaux 5.1 à 5.3 ci-dessous comparent la version d'origine à la première version V2.
 
 ### 5.1 Mobile, étranglement réellement appliqué (méthode « devtools » : 4G lente, processeur ×4)
 Mesure la plus proche d'un vrai téléphone : le réseau et le processeur sont ralentis pendant le chargement.

@@ -59,6 +59,13 @@ export function Header({ locale }: { locale: Locale }) {
     document.documentElement.style.setProperty("--sticky-top", hidden ? "0.75rem" : "var(--header-h)");
   }, [hidden]);
 
+  // La barre d'actions mobile peut ouvrir le menu (l'en-tête est masqué pendant la descente)
+  useEffect(() => {
+    const openMenu = () => setOpen(true);
+    window.addEventListener("ml:open-menu", openMenu);
+    return () => window.removeEventListener("ml:open-menu", openMenu);
+  }, []);
+
   const close = useCallback(() => {
     setOpen(false);
     toggle.current?.focus();
@@ -79,7 +86,7 @@ export function Header({ locale }: { locale: Locale }) {
             href={href("home", locale)}
             aria-label={t.a11y.home}
             className={`relative z-[61] -ml-2 block rounded-[1.1rem] px-2 py-1 transition-[background-color,box-shadow] duration-500 ${
-              scrolled && !open ? "bg-ivory/90 shadow-[0_6px_24px_-12px_rgb(39_36_32/0.35)] backdrop-blur-md" : ""
+              scrolled && !open ? "bg-ivory/95 shadow-[0_6px_24px_-12px_rgb(39_36_32/0.35)] lg:backdrop-blur-md" : ""
             }`}
           >
             <Logo preload alt="Moonlight café" className="h-[56px] w-auto lg:h-[72px]" />
@@ -122,7 +129,7 @@ export function Header({ locale }: { locale: Locale }) {
               aria-expanded={open}
               aria-controls="mobile-menu"
               aria-label={open ? t.a11y.closeMenu : t.a11y.openMenu}
-              className="chip relative z-[61] min-h-11 gap-3 bg-ivory/90 pl-4 pr-3.5 font-semibold backdrop-blur-md lg:hidden"
+              className="chip relative z-[61] min-h-11 gap-3 bg-ivory/95 pl-4 pr-3.5 font-semibold lg:hidden"
             >
               <span>{open ? t.common.close : t.common.menuLabel}</span>
               <span aria-hidden="true" className="relative block h-3 w-5">

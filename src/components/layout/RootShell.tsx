@@ -7,6 +7,7 @@ import { PageTransition } from "@/components/motion/PageTransition";
 import { MotionRuntime } from "@/components/motion/MotionRuntime";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
+import { MobileDock } from "./MobileDock";
 import { localBusinessJsonLd } from "@/lib/seo";
 
 /**
@@ -40,6 +41,7 @@ export function RootShell({ locale, children }: { locale: Locale; children: Reac
             {children}
           </main>
           <Footer locale={locale} />
+          <MobileDock locale={locale} />
         </PageTransition>
         <MotionRuntime />
       </body>

@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { Fragment, type CSSProperties } from "react";
 import { Reveal } from "@/components/motion/Reveal";
 import { Photo } from "@/components/ui/Photo";
 import { getDictionary } from "@/i18n";
@@ -6,7 +6,7 @@ import type { Locale } from "@/i18n/config";
 
 /**
  * SCÈNE 02 — L'univers Moonlight. Une respiration claire après le hero :
- * une phrase courte, révélée mot à mot au défilement, les faits, et le lettrage du comptoir.
+ * une phrase courte, révélée mot à mot à son arrivée, les faits, et le lettrage du comptoir.
  */
 export function Universe({ locale }: { locale: Locale }) {
   const t = getDictionary(locale).home.universe;
@@ -19,13 +19,13 @@ export function Universe({ locale }: { locale: Locale }) {
             {t.eyebrow}
           </h2>
           <p
-            data-progress="in"
+            data-reveal="words"
             className="words mt-6 font-[family-name:var(--font-display)] text-[clamp(1.9rem,3.5vw,3.5rem)] font-semibold leading-[1.04] tracking-[-0.03em]"
           >
             {words.map((w, i) => (
-              <span key={i} style={{ "--w": (i / words.length).toFixed(3) } as CSSProperties}>
-                {w}{" "}
-              </span>
+              <Fragment key={i}>
+                <span style={{ "--i": i } as CSSProperties}>{w}</span>{" "}
+              </Fragment>
             ))}
           </p>
           <Reveal as="dl" variant="stagger" className="mt-12 grid max-w-xl grid-cols-2 gap-x-6 gap-y-7">

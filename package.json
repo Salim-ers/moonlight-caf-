@@ -12,7 +12,8 @@
     "check:photos": "node scripts/check-photos.mjs",
     "check": "npm run typecheck && npm run lint && npm run build",
     "qa": "node scripts/qa.mjs http://localhost:3000",
-    "brand-assets": "node scripts/generate-brand-assets.mjs"
+    "brand-assets": "node scripts/generate-brand-assets.mjs",
+    "images": "node scripts/build-images.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.61.0",

@@ -54,10 +54,10 @@ export function Footer({ locale }: { locale: Locale }) {
           </div>
           <nav aria-label={t.a11y.footerNav} className="lg:col-span-2">
             <h2 className="t-eyebrow mb-4 font-[family-name:var(--font-sans)] text-ivory/60">{t.footer.explore}</h2>
-            <ul className="space-y-1.5">
+            <ul className="space-y-0.5">
               {EXPLORE.map((k) => (
                 <li key={k}>
-                  <TLink href={href(k, locale)} className="link-draw">
+                  <TLink href={href(k, locale)} className="link-draw inline-block py-1.5">
                     {t.nav[k]}
                   </TLink>
                 </li>
@@ -66,9 +66,9 @@ export function Footer({ locale }: { locale: Locale }) {
           </nav>
           <div className="lg:col-span-3">
             <h2 className="t-eyebrow mb-4 font-[family-name:var(--font-sans)] text-ivory/60">{t.footer.follow}</h2>
-            <ul className="space-y-1.5">
+            <ul className="space-y-0.5">
               <li>
-                <a href={siteConfig.instagram.url} target="_blank" rel="noopener noreferrer" className="link-draw">
+                <a href={siteConfig.instagram.url} target="_blank" rel="noopener noreferrer" className="link-draw inline-block py-1.5">
                   Instagram {siteConfig.instagram.handle}
                   <span className="sr-only"> {t.a11y.newTab}</span>
                 </a>
@@ -100,17 +100,17 @@ export function Footer({ locale }: { locale: Locale }) {
           </p>
           <ul className="flex flex-wrap items-center gap-x-6 gap-y-1">
             <li>
-              <TLink href={href("legal", locale)} className="link-draw">
+              <TLink href={href("legal", locale)} className="link-draw inline-flex min-h-11 items-center">
                 {t.footer.legal}
               </TLink>
             </li>
             <li>
-              <TLink href={href("privacy", locale)} className="link-draw">
+              <TLink href={href("privacy", locale)} className="link-draw inline-flex min-h-11 items-center">
                 {t.footer.privacy}
               </TLink>
             </li>
             <li>
-              <TLink href={href("cookies", locale)} className="link-draw">
+              <TLink href={href("cookies", locale)} className="link-draw inline-flex min-h-11 items-center">
                 {t.footer.cookies}
               </TLink>
             </li>

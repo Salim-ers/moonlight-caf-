@@ -32,7 +32,7 @@ export function CoffeeColors({ locale }: { locale: Locale }) {
       hint={t.hint}
       eyebrow={t.eyebrow}
       heading={<Lines id="colors-title" lines={t.title} accent={1} className="t-h2 mt-5" />}
-      photo={<Photo id="p09" locale={locale} quality={85} sizes="(min-width: 1024px) 100vw, 180vw" />}
+      photo={<Photo id="p09" locale={locale} sizes="(min-width: 1024px) 100vw, 180vw" />}
       cta={
         <ButtonLink href={href("menu", locale)} size="sm" variant="outline">
           {t.cta}
