@@ -30,7 +30,7 @@ Les mentions légales affichent « [À compléter] » et un bandeau « Document 
     - photo 12 (cookies) = Cookie ;
     - photo 10 (tasses bleue et verte) = Blue Latte ;
     - photo 25 (gobelet vert) = Iced Matcha Latte.
-    Iced Mango Matcha Latte : aucune photo fiable, présenté en composition typographique. Une vraie photo serait un plus.
+    - photo 27 (gobelet Moonlight, couches mangue / lait / matcha) = Iced Mango Matcha Latte, photo envoyée le 23 octobre 2026.
 14. Boissons montrées **sans nom ni prix** (non identifiées sur la carte) : la boisson violette (photos 02 et 09, présentée comme « une création du moment »), le matcha sur boisson ambrée (05), le matcha sur lait rose (06), le matcha à la poire (26), la viennoiserie (14). Si ce sont des produits de la carte, donner leurs noms.
 
 ## D. Informations pratiques
@@ -42,7 +42,7 @@ Les mentions légales affichent « [À compléter] » et un bandeau « Document 
 
 ## E. Photographies
 
-19. Les 26 photos ont été fournies en 1672 × 941 px sous des noms « Image ChatGPT… » : faire confirmer qu'elles représentent fidèlement le lieu et les produits, et que le café en détient les droits. Des originaux plus grands amélioreraient la netteté sur grands écrans.
+19. Les 26 premières photos ont été fournies en 1672 × 941 px sous des noms « Image ChatGPT… » (la 27e, 1086 × 1448 px, à part) : faire confirmer qu'elles représentent fidèlement le lieu et les produits, et que le café en détient les droits. Des originaux plus grands amélioreraient la netteté sur grands écrans.
 
 ## F. Mise en ligne
 

@@ -93,13 +93,15 @@ export const favorites: Favorite[] = [
   },
   {
     itemId: "iced-mango-matcha-latte",
+    photo: "p27",
+    focus: "55% 35%",
     tone: "butter",
     art: { kind: "layered", colors: ["var(--color-matcha)", "var(--color-ivory)", "#e9ae3f"] },
     line: { fr: "La mangue rencontre le matcha, sur glace.", en: "Mango meets matcha, over ice." },
     story: {
-      fr: "La version fruitée du matcha glacé. Pas encore de photo : elle vous attend au comptoir.",
-      en: "The fruity take on iced matcha. No photo yet: it's waiting for you at the counter.",
+      fr: "La version fruitée du matcha glacé. Une couche de mangue au fond, le lait, puis le matcha par-dessus : un tour de paille, et tout se mélange.",
+      en: "The fruity take on iced matcha. Mango at the bottom, then milk, then matcha on top: one stir of the straw and it all comes together.",
     },
-    notes: { fr: ["Mangue", "Matcha", "Sur glace"], en: ["Mango", "Matcha", "Over ice"] },
+    notes: { fr: ["Mangue", "Lait", "Matcha", "Sur glace"], en: ["Mango", "Milk", "Matcha", "Over ice"] },
   },
 ];

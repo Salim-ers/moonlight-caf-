@@ -25,7 +25,7 @@ Contrôles qualité :
 ```bash
 npm run typecheck     # TypeScript strict
 npm run lint          # ESLint (règles Next.js + React Hooks)
-npm run check:photos  # audit anti-doublon des 26 photographies + versions web à jour
+npm run check:photos  # audit anti-doublon des 27 photographies + versions web à jour
 npm run images        # régénère les versions web des photos (après remplacement/ajout)
 npm run check         # typecheck + lint + build
 npm run qa            # recette fonctionnelle (serveur lancé, voir docs/VERIFICATION.md)
@@ -53,7 +53,7 @@ scripts/
   qa.mjs                 Recette fonctionnelle Playwright (39 contrôles)
 src/
   app/                   Routes (fr) sans préfixe, (en) sous /en, sitemap, robots, manifest, icônes
-  assets/photos/         Les 26 photos (Next.js génère AVIF/WebP et tailles responsive)
+  assets/photos/         Les 27 photos sources (npm run images → AVIF/WebP/JPEG dans public/img)
   components/
     layout/              En-tête, menu mobile, pied de page, sélecteur de langue
     motion/              MotionRuntime (moteur d'animation), PageTransition (logo complet), Reveal
@@ -63,7 +63,7 @@ src/
     pages/               Contenu de chaque page (partagé FR/EN)
     ui/                  Photo, Logo, boutons, horaires, statut d'ouverture, plan avec consentement…
   data/
-    photo-manifest.ts    Registre central des 26 photos : un seul emplacement par photo
+    photo-manifest.ts    Registre central des 27 photos : un seul emplacement par photo
     menu-data.ts         La carte : produits, prix, suppléments, couleur de chaque catégorie
     favorites.ts         « Nos favoris » : ordre, textes, photo (si fiable), couleur
     site-config.ts       Coordonnées, réseaux, faits vérifiés, données juridiques à valider
@@ -98,7 +98,7 @@ Le statut « Ouvert jusqu'à… » est calculé dans le navigateur à l'heure de
 
 ## 5. Photographies — règle « une photo = un emplacement »
 
-Les 26 photos sont déclarées dans `src/data/photo-manifest.ts` (identifiant `p01`…`p26`, fichier source du ZIP, page et section propriétaires, fichier autorisé à l'utiliser, textes alternatifs FR/EN, point focal).
+Les 27 photos sont déclarées dans `src/data/photo-manifest.ts` (identifiant `p01`…`p27`, fichier source du ZIP — la 27e, l'Iced Mango Matcha Latte, a été envoyée à part —, page et section propriétaires, fichier autorisé à l'utiliser, textes alternatifs FR/EN, point focal).
 La numérotation suit l'ordre du ZIP original `Moonlight  café.zip` (vérifié par empreinte MD5).
 
 `npm run check:photos` (lancé automatiquement avant chaque build) échoue si :

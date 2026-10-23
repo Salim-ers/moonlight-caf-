@@ -391,5 +391,19 @@ export const photoVariants: Record<string, PhotoVariant> = {
     "width": 1672,
     "height": 941,
     "color": "#c8b8a8"
+  },
+  "27-iced-mango-matcha-latte.jpg": {
+    "base": "/img/27-iced-mango-matcha-latte.0beb103f",
+    "hash": "0beb103f",
+    "widths": [
+      480,
+      640,
+      828,
+      1080,
+      1086
+    ],
+    "width": 1086,
+    "height": 1448,
+    "color": "#d8c8b8"
   }
 };

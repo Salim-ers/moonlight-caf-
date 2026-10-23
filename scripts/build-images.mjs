@@ -1,5 +1,5 @@
 /**
- * Génère, une fois pour toutes, les versions web des 26 photographies :
+ * Génère, une fois pour toutes, les versions web des photographies :
  * AVIF + WebP en 6 largeurs, et un JPEG de secours pour les navigateurs anciens.
  * Les fichiers sont servis tels quels par le CDN (aucune optimisation « à la volée » :
  * pas de première visite lente, pas de quota, pas d'échec de génération).

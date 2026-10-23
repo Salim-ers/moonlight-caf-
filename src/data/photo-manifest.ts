@@ -1,5 +1,5 @@
 /**
- * Registre central des 26 photographies du Moonlight Café.
+ * Registre central des 27 photographies du Moonlight Café.
  *
  * Règle : une photographie n'apparaît qu'à UN SEUL emplacement éditorial sur tout le site
  * (les versions FR et EN d'une même page partagent leurs images, la visionneuse qui agrandit
@@ -9,9 +9,10 @@
  *
  * Numérotation = ordre des 26 images du ZIP original « Moonlight  café.zip »
  * (vérifiée par empreinte MD5 : 01 = « …13_51_33-1.png » … 26 = « …13_59_12-10.png »).
+ * 27 = photo de l'Iced Mango Matcha Latte, envoyée séparément le 23 octobre 2026.
  *
  * Pour remplacer une photo : déposez le fichier dans `src/assets/photos/`, modifiez l'import
- * et l'entrée correspondante. Next.js génère les formats AVIF/WebP et les tailles responsive.
+ * et l'entrée correspondante. Lancez ensuite `npm run images` (AVIF/WebP/JPEG, toutes tailles).
  */
 import type { StaticImageData } from "next/image";
 
@@ -41,6 +42,7 @@ import p23 from "@/assets/photos/23-facade-gobelet-moonlight.jpg";
 import p24 from "@/assets/photos/24-barista-boisson-glacee.jpg";
 import p25 from "@/assets/photos/25-matcha-glace-gobelet.jpg";
 import p26 from "@/assets/photos/26-matcha-glace-poire.jpg";
+import p27 from "@/assets/photos/27-iced-mango-matcha-latte.jpg";
 
 export type PhotoPage = "home" | "favorites" | "menu" | "cafe" | "story" | "visit";
 
@@ -49,7 +51,7 @@ export type PhotoEntry = {
   id: string;
   /** Nom du fichier dans le ZIP original fourni par le café. */
   source: string;
-  /** Fichier optimisé servi par le site (Next.js en dérive AVIF/WebP). */
+  /** Fichier optimisé servi par le site (`npm run images` en dérive AVIF/WebP/JPEG). */
   file: string;
   src: StaticImageData;
   width: number;
@@ -482,6 +484,22 @@ export const photoManifest = {
       en: "Iced matcha drink beside a pear on a wooden table",
     },
     focus: "48% 55%",
+    status: "used",
+  }),
+  p27: photo({
+    id: "p27",
+    source: "Photo envoyée le 23 oct. 2026 (hors ZIP)",
+    file: "27-iced-mango-matcha-latte.jpg",
+    src: p27,
+    page: "favorites",
+    section: "Nos favoris — Iced Mango Matcha Latte",
+    usedIn: "src/data/favorites.ts",
+    description: "Iced Mango Matcha Latte en couches dans un gobelet Moonlight, Iced Strawberry Matcha Latte en arrière-plan.",
+    alt: {
+      fr: "Iced Mango Matcha Latte en trois couches, matcha, lait et mangue, dans un gobelet Moonlight sur une table en bois, avec un Iced Strawberry Matcha Latte en arrière-plan",
+      en: "Iced Mango Matcha Latte in three layers, matcha, milk and mango, in a Moonlight cup on a wooden table, with an Iced Strawberry Matcha Latte behind it",
+    },
+    focus: "55% 35%",
     status: "used",
   }),
 } satisfies Record<string, PhotoEntry>;

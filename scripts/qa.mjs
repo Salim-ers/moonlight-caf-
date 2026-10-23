@@ -127,8 +127,8 @@ for (const r of routes) {
 }
 const dup = [...photoPages].filter(([, s]) => s.size > 1);
 ok(
-  `photos : ${photoPages.size}/26 affichées, aucune sur deux pages`,
-  photoPages.size === 26 && dup.length === 0,
+  `photos : ${photoPages.size}/27 affichées, aucune sur deux pages`,
+  photoPages.size === 27 && dup.length === 0,
   dup.map(([p, s]) => `${p}:${[...s]}`).join(" "),
 );
 

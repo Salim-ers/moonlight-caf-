@@ -11,7 +11,7 @@ Tout ce qui figure ici a été **réellement exécuté**. Les scripts sont fourn
 |---|---|---|
 | TypeScript strict | `npm run typecheck` | 0 erreur |
 | ESLint (Next.js + React Hooks) | `npm run lint` | 0 erreur, 0 avertissement |
-| Audit des photos | `npm run check:photos` | 26 photos, 26 emplacements uniques, aucun doublon MD5 ni perceptuel |
+| Audit des photos | `npm run check:photos` | 27 photos, 27 emplacements uniques, aucun doublon MD5 ni perceptuel |
 | Build de production | `npm run build` | OK — 26 routes, toutes statiques sauf le 404 |
 
 ## 2. Recette fonctionnelle (39/39)
@@ -21,7 +21,7 @@ Tout ce qui figure ici a été **réellement exécuté**. Les scripts sont fourn
 | Domaine | Ce qui est vérifié | Résultat |
 |---|---|---|
 | 18 pages FR + EN | statut 200, un seul `<h1>`, `lang`, meta description, Open Graph, JSON-LD, 3 hreflang, aucune image sans `alt` ni cassée, aucun débordement horizontal, **aucun caractère japonais/chinois, aucune référence « japonais / coréen / chinois »** | 18/18 |
-| Photos | les 26 photos sont affichées et **aucune n'apparaît sur deux pages** (contrôle dans le navigateur, FR et EN regroupées) | OK |
+| Photos | les 27 photos sont affichées et **aucune n'apparaît sur deux pages** (contrôle dans le navigateur, FR et EN regroupées) | OK |
 | Liens | 34 liens internes → 200 ; externes limités à Instagram, Google Maps, e-mail, Vercel | OK |
 | 404 | `/inexistant`, `/en/nothing` → 404 dans la bonne langue | OK |
 | Transition de page | logo **complet** (`moonlight-logo.webp`), `object-fit: contain`, ratio d'origine (1,413), centré à < 1 px près, entièrement dans l'écran ; arrivée, titre de page, focus sur le contenu ; durée < 900 ms | OK |

@@ -52,4 +52,4 @@ Les photos fournies mesurent 1672 × 941 px : aucun cadrage n'est affiché au-de
 Transform, opacity et clip-path uniquement ; easing « expo out » pour les entrées, « in-out » pour les masques. Révélations variées (rideau vertical, horizontal, cercle, fenêtre, arche, pop), jamais la même sur toutes les photos. Rien ne bloque la lecture ni le clic ; tout est désactivé avec « réduire les animations ».
 
 ## Photographie
-Répartition exclusive des 26 photos : voir `src/data/photo-manifest.ts` (accueil 9, Nos favoris 6, Le café 6, Notre histoire 3, La carte 1, Nous trouver 1). Une photo n'est associée à un produit que si elle le montre réellement ; sinon, composition typographique ou illustration abstraite.
+Répartition exclusive des 27 photos : voir `src/data/photo-manifest.ts` (accueil 9, Nos favoris 7, Le café 6, Notre histoire 3, La carte 1, Nous trouver 1). Une photo n'est associée à un produit que si elle le montre réellement ; sinon, composition typographique ou illustration abstraite.
